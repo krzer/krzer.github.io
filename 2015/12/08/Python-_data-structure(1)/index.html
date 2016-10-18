@@ -1,0 +1,620 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Python数据结构（一） | Krzer&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="krzer">
+    
+    
+    <meta name="keywords" content="python,krzer">
+    
+    
+    
+    <meta name="description" content="这几天闲着无事，准备着手总结一些Python常用的数据结构，我们知道，一个程序里面必然会有数据的存在，同样的一个或几个数据要组织起来，可以有不同的组织方式，也就是不同的存储方式。不同的组织方式就是不同的结构，我们把这些数据组织在一起的结构称之为数据的结构，也叫做数据结构。Python中数据的组织方式叫做Python的数据结构。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python数据结构（一）">
+<meta property="og:url" content="http://krzer.com/2015/12/08/Python-_data-structure(1)/index.html">
+<meta property="og:site_name" content="Krzer's Blog">
+<meta property="og:description" content="这几天闲着无事，准备着手总结一些Python常用的数据结构，我们知道，一个程序里面必然会有数据的存在，同样的一个或几个数据要组织起来，可以有不同的组织方式，也就是不同的存储方式。不同的组织方式就是不同的结构，我们把这些数据组织在一起的结构称之为数据的结构，也叫做数据结构。Python中数据的组织方式叫做Python的数据结构。">
+<meta property="og:updated_time" content="2015-12-10T14:46:06.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python数据结构（一）">
+<meta name="twitter:description" content="这几天闲着无事，准备着手总结一些Python常用的数据结构，我们知道，一个程序里面必然会有数据的存在，同样的一个或几个数据要组织起来，可以有不同的组织方式，也就是不同的存储方式。不同的组织方式就是不同的结构，我们把这些数据组织在一起的结构称之为数据的结构，也叫做数据结构。Python中数据的组织方式叫做Python的数据结构。">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Krzer&#39;s Blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Krzer&#39;s Blog" title="Krzer&#39;s Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Krzer&#39;s Blog">Krzer&#39;s Blog</a></h1>
+				<h2 class="blog-motto">Talk Is Cheap, Show Me The Code</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页 | Home</a></li>
+					
+						<li><a href="/archives">归档 | Archives</a></li>
+					
+						<li><a href="/about">简介 | About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:krzer.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/12/08/Python-_data-structure(1)/" title="Python数据结构（一）" itemprop="url">Python数据结构（一）</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="krzer" target="_blank" itemprop="author">krzer</a>
+		
+  <p class="article-time">
+    <time datetime="2015-12-08T12:10:33.000Z" itemprop="datePublished"> 发表于 2015-12-08</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Python数据结构的类型"><span class="toc-number">1.</span> <span class="toc-text">Python数据结构的类型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#List（列表）"><span class="toc-number">1.1.</span> <span class="toc-text">List（列表）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#列表的构建"><span class="toc-number">1.1.1.</span> <span class="toc-text">列表的构建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#列表的索引"><span class="toc-number">1.1.2.</span> <span class="toc-text">列表的索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#列表的切片"><span class="toc-number">1.1.3.</span> <span class="toc-text">列表的切片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#列表的串联"><span class="toc-number">1.1.4.</span> <span class="toc-text">列表的串联</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#列表的赋值"><span class="toc-number">1.1.5.</span> <span class="toc-text">列表的赋值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tuple（元组）"><span class="toc-number">1.2.</span> <span class="toc-text">Tuple（元组）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#元组的构建"><span class="toc-number">1.2.1.</span> <span class="toc-text">元组的构建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#元组的索引与切片"><span class="toc-number">1.2.2.</span> <span class="toc-text">元组的索引与切片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#元组的串联"><span class="toc-number">1.2.3.</span> <span class="toc-text">元组的串联</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#元组的特殊语法"><span class="toc-number">1.2.4.</span> <span class="toc-text">元组的特殊语法</span></a></li></ol></li></ol></li></ol>
+		
+		</div>
+		
+		<p>这几天闲着无事，准备着手总结一些Python常用的数据结构，我们知道，一个程序里面必然会有数据的存在，同样的一个或几个数据要组织起来，可以有不同的组织方式，也就是不同的存储方式。不同的组织方式就是不同的结构，我们把这些数据组织在一起的结构称之为数据的结构，也叫做数据结构。Python中数据的组织方式叫做Python的数据结构。<br><a id="more"></a></p>
+<h1 id="Python数据结构的类型"><a href="#Python数据结构的类型" class="headerlink" title="Python数据结构的类型"></a>Python数据结构的类型</h1><p>Python作为一门日趋流行且壮大的编程语言，所拥有的数据类型是相当丰富的，因而可见它的数据结构也是非常多的，其中，Python中系统自己定义好的，不需要我们自己去定义的数据结构叫做Python的内置数据结构，比如列表、元组等，而有些数据组织方式，Python系统里面没有直接定义，需要我们自己去定义实现这些数据的组织方式，这些数据组织方式称为Python的扩展数据结构，比如栈、队列等。</p>
+<h2 id="List（列表）"><a href="#List（列表）" class="headerlink" title="List（列表）"></a>List（列表）</h2><p>List（列表） 是 Python 中使用最频繁的数据类型。<br>列表是写在方括号之间、用逗号分隔开的元素列表。列表中元素的类型可以不相同：</p>
+<h3 id="列表的构建"><a href="#列表的构建" class="headerlink" title="列表的构建"></a>列表的构建</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; a = [<span class="string">'apple'</span>, <span class="number">100</span>, <span class="number">200</span>, <span class="string">'pear'</span>]</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; print(a)</div><div class="line">[<span class="string">'apple'</span>, <span class="number">100</span>, <span class="number">200</span>, <span class="string">'pear'</span>]</div></pre></td></tr></table></figure>
+<p>列表同样可以被索引和切片（所谓的索引和切片就是可以进行查找和截取相应的内容），列表被切片后返回一个包含所需元素的新列表。</p>
+<h3 id="列表的索引"><a href="#列表的索引" class="headerlink" title="列表的索引"></a>列表的索引</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; a = [<span class="string">'apple'</span>, <span class="number">100</span>, <span class="number">200</span>, <span class="string">'pear'</span>]</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; print(a[<span class="number">2</span>])</div><div class="line"><span class="number">200</span></div></pre></td></tr></table></figure>
+<p><strong>注意：在Python的列表中，起始位置是从0开始的，a[2]实际输出的数据是列表中第3个数据</strong></p>
+<h3 id="列表的切片"><a href="#列表的切片" class="headerlink" title="列表的切片"></a>列表的切片</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; a = [<span class="string">'apple'</span>, <span class="number">100</span>, <span class="number">200</span>, <span class="string">'pear'</span>]</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; print(a[<span class="number">0</span><span class="symbol">:</span><span class="number">2</span>])</div><div class="line">[<span class="string">'apple'</span>, <span class="number">100</span>]</div></pre></td></tr></table></figure>
+<h3 id="列表的串联"><a href="#列表的串联" class="headerlink" title="列表的串联"></a>列表的串联</h3><p>此外列表还支持串联操作，使用+操作符：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; a = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]</div><div class="line">&gt;&gt;&gt; a + [<span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>]</div><div class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>]</div></pre></td></tr></table></figure></p>
+<h3 id="列表的赋值"><a href="#列表的赋值" class="headerlink" title="列表的赋值"></a>列表的赋值</h3><p>对于强大的Python来说，在Python的列表中的元素是可以改变的：<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; a = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; a[<span class="number">0</span>] = <span class="number">9</span></div><div class="line"><span class="meta">&gt;&gt;</span>&gt; a[<span class="number">2</span><span class="symbol">:</span><span class="number">5</span>] = [<span class="number">13</span>, <span class="number">14</span>, <span class="number">15</span>]</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; a</div><div class="line">[<span class="number">9</span>, <span class="number">2</span>, <span class="number">13</span>, <span class="number">14</span>, <span class="number">15</span>, <span class="number">6</span>]</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; a[<span class="number">2</span><span class="symbol">:</span><span class="number">5</span>] = []   <span class="comment"># 删除此段列表</span></div><div class="line"><span class="meta">&gt;&gt;</span>&gt; a</div><div class="line">[<span class="number">9</span>, <span class="number">2</span>, <span class="number">6</span>]</div></pre></td></tr></table></figure></p>
+<p>此外List还内置了有很多方法，例如append()、pop()等等。如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">方法</th>
+<th></th>
+<th>描述</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.append(x)</td>
+<td></td>
+<td>把一个元素添加到列表的结尾，相当于 a[len(a):] = [x]。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.extend(L)</td>
+<td></td>
+<td>通过添加指定列表的所有元素来扩充列表，相当于 a[len(a):] = L。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.insert(i, x)</td>
+<td></td>
+<td>在指定位置插入一个元素。第一个参数是准备插入到其前面的那个元素的索引，例如 a.insert(0, x) 会插入到整个列表之前，而 a.insert(len(a), x) 相当于 a.append(x) 。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.remove(x)</td>
+<td></td>
+<td>删除列表中值为 x 的第一个元素。如果没有这样的元素，就会返回一个错误。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.pop([i])</td>
+<td></td>
+<td>从列表的指定位置删除元素，并将其返回。如果没有指定索引，a.pop()返回最后一个元素。元素随即从列表中被删除。（方法中 i 两边的方括号表示这个参数是可选的，而不是要求你输入一对方括号，你会经常在 Python 库参考手册中遇到这样的标记。）</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.clear()</td>
+<td></td>
+<td>移除列表中的所有项，等于del a[:]。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.index(x)</td>
+<td></td>
+<td>返回列表中第一个值为 x 的元素的索引。如果没有匹配的元素就会返回一个错误。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.count(x)</td>
+<td></td>
+<td>返回 x 在列表中出现的次数。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.sort()</td>
+<td></td>
+<td>对列表中的元素进行排序。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.reverse()</td>
+<td></td>
+<td>倒排列表中的元素。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.copy()</td>
+<td></td>
+<td>返回列表的浅复制，等于a[:]。</td>
+</tr>
+</tbody>
+</table>
+<p>下面是表格中大部分方法的实例：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; a = [<span class="number">66.25</span>, <span class="number">333</span>, <span class="number">333</span>, <span class="number">1</span>, <span class="number">1234.5</span>]</div><div class="line">&gt;&gt;&gt; print(a.count(<span class="number">333</span>), a.count(<span class="number">66.25</span>), a.count('x'))</div><div class="line"><span class="number">2</span> <span class="number">1</span> <span class="number">0</span></div><div class="line">&gt;&gt;&gt; a.insert(<span class="number">2</span>, <span class="number">-1</span>)</div><div class="line">&gt;&gt;&gt; a.append(<span class="number">333</span>)</div><div class="line">&gt;&gt;&gt; a</div><div class="line">[<span class="number">66.25</span>, <span class="number">333</span>, <span class="number">-1</span>, <span class="number">333</span>, <span class="number">1</span>, <span class="number">1234.5</span>, <span class="number">333</span>]</div><div class="line">&gt;&gt;&gt; a.index(<span class="number">333</span>)</div><div class="line"><span class="number">1</span></div><div class="line">&gt;&gt;&gt; a.remove(<span class="number">333</span>)</div><div class="line">&gt;&gt;&gt; a</div><div class="line">[<span class="number">66.25</span>, <span class="number">-1</span>, <span class="number">333</span>, <span class="number">1</span>, <span class="number">1234.5</span>, <span class="number">333</span>]</div><div class="line">&gt;&gt;&gt; a.reverse()</div><div class="line">&gt;&gt;&gt; a</div><div class="line">[<span class="number">333</span>, <span class="number">1234.5</span>, <span class="number">1</span>, <span class="number">333</span>, <span class="number">-1</span>, <span class="number">66.25</span>]</div><div class="line">&gt;&gt;&gt; a.sort()</div><div class="line">&gt;&gt;&gt; a</div><div class="line">[<span class="number">-1</span>, <span class="number">1</span>, <span class="number">66.25</span>, <span class="number">333</span>, <span class="number">333</span>, <span class="number">1234.5</span>]</div></pre></td></tr></table></figure></p>
+<p><strong>注意：</strong></p>
+<ol>
+<li>List写在方括号之间，元素用逗号隔开。</li>
+<li>和字符串一样，list可以被索引和切片。</li>
+<li>List可以使用+操作符进行拼接。</li>
+<li>List中的元素是可以改变的。</li>
+</ol>
+<h2 id="Tuple（元组）"><a href="#Tuple（元组）" class="headerlink" title="Tuple（元组）"></a>Tuple（元组）</h2><p>元组（tuple）与列表类似，不同之处在于元组的元素不能修改。元组写在小括号里，元素之间用逗号隔开。</p>
+<h3 id="元组的构建"><a href="#元组的构建" class="headerlink" title="元组的构建"></a>元组的构建</h3><p>元组中的元素类型也可以不相同：<br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; a = ('apple', <span class="number">100</span>, <span class="number">200</span>, 'pear')</div><div class="line">&gt;&gt;&gt; print(<span class="name">a</span>, type(<span class="name">a</span>), len(<span class="name">a</span>))</div><div class="line">('apple', <span class="number">100</span>, <span class="number">200</span>, 'pear') &lt;class 'tuple'&gt; <span class="number">4</span></div></pre></td></tr></table></figure></p>
+<h3 id="元组的索引与切片"><a href="#元组的索引与切片" class="headerlink" title="元组的索引与切片"></a>元组的索引与切片</h3><p>元组与列表类似，可以被索引且下标索引从0开始，也可以进行截取/切片（看上面，这里不再赘述）。<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; tup = (<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>)</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; print(tup[<span class="number">0</span>], tup[<span class="number">1</span><span class="symbol">:</span><span class="number">5</span>])</div><div class="line"><span class="number">1</span> (<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>)</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; tup[<span class="number">0</span>] = <span class="number">11</span>  <span class="comment"># 修改元组元素的操作是非法的</span></div></pre></td></tr></table></figure></p>
+<p><strong>虽然tuple的元素不可改变，但它可以包含可变的对象，比如list列表。</strong></p>
+<h3 id="元组的串联"><a href="#元组的串联" class="headerlink" title="元组的串联"></a>元组的串联</h3><p>此外，元组也支持用+操作符：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; tup1, tup2 = (<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>), (<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>)</div><div class="line">&gt;&gt;&gt; print(tup1+tup2)</div><div class="line">(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>)</div></pre></td></tr></table></figure></p>
+<h3 id="元组的特殊语法"><a href="#元组的特殊语法" class="headerlink" title="元组的特殊语法"></a>元组的特殊语法</h3><p>构造包含0个或1个元素的tuple是个特殊的问题，所以有一些额外的语法规则：<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="attr">tup1</span> = () # 空元组</div><div class="line"><span class="attr">tup2</span> = (<span class="number">20</span>,) # 一个元素，需要在元素后添加逗号</div></pre></td></tr></table></figure></p>
+<p><strong>string、list和tuple都属于sequence（序列）。</strong></p>
+<p><strong>注意：</strong></p>
+<ol>
+<li>与字符串一样，元组的元素不能修改。</li>
+<li>元组也可以被索引和切片，方法一样。</li>
+<li>注意构造包含0或1个元素的元组的特殊语法规则。</li>
+<li>元组也可以使用+操作符进行拼接。</li>
+</ol>
+<p>文章出自：<a href="http://krzer.com/">Krzer</a> <a href="http://krzer.com/">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/代码之路/">代码之路</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/python/">python</a><a href="/tags/数据结构/">数据结构</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://krzer.com/2015/12/08/Python-_data-structure(1)/" data-title="Python数据结构（一） | Krzer&#39;s Blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/12/10/Python-_data-structure(2)/" title="Python数据结构（二）">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Python数据结构（二）</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/12/03/Python3-spider-_practice/"  title="Python3爬虫实战">
+ <strong>下一篇：</strong><br/> 
+ <span>Python3爬虫实战
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/12/08/Python-_data-structure(1)/" data-title="Python数据结构（一）" data-url="http://krzer.com/2015/12/08/Python-_data-structure(1)/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Python数据结构的类型"><span class="toc-number">1.</span> <span class="toc-text">Python数据结构的类型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#List（列表）"><span class="toc-number">1.1.</span> <span class="toc-text">List（列表）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#列表的构建"><span class="toc-number">1.1.1.</span> <span class="toc-text">列表的构建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#列表的索引"><span class="toc-number">1.1.2.</span> <span class="toc-text">列表的索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#列表的切片"><span class="toc-number">1.1.3.</span> <span class="toc-text">列表的切片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#列表的串联"><span class="toc-number">1.1.4.</span> <span class="toc-text">列表的串联</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#列表的赋值"><span class="toc-number">1.1.5.</span> <span class="toc-text">列表的赋值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tuple（元组）"><span class="toc-number">1.2.</span> <span class="toc-text">Tuple（元组）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#元组的构建"><span class="toc-number">1.2.1.</span> <span class="toc-text">元组的构建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#元组的索引与切片"><span class="toc-number">1.2.2.</span> <span class="toc-text">元组的索引与切片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#元组的串联"><span class="toc-number">1.2.3.</span> <span class="toc-text">元组的串联</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#元组的特殊语法"><span class="toc-number">1.2.4.</span> <span class="toc-text">元组的特殊语法</span></a></li></ol></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/代码之路/" title="代码之路">代码之路<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.yuzhaoge.com/" target="_blank" title="余朝歌的博客">余朝歌的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.03sec.com/" target="_blank" title="Sky’s自留地">Sky’s自留地</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Krzer. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/611233942" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/krzer" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:krzer@qq.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2016 
+		
+		<a href="http://krzer.com/about" target="_blank" title="krzer">krzer</a>
+		
+		<a href="http://tongji.baidu.com/web/welcome/ico?s=716f8753758979a471ff0797e371977d" target="_blank">百度统计</a><br/>
+		本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 本站访客数 <span id="busuanzi_value_site_uv"></span> 人次, 本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次
+		</p>
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"krzer"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?716f8753758979a471ff0797e371977d";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

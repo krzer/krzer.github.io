@@ -1,0 +1,495 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>正则表达式实例大全 | Krzer&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="krzer">
+    
+    
+    <meta name="keywords" content="python,krzer">
+    
+    
+    
+    <meta name="description" content="上次在Python爬虫入门里提起过正则表达式，但是由于篇幅有限，并没有很详尽地介绍正则表达式更多的用法。我们知道正则表达式的用途极为广泛，可以在爬虫里的匹配字符，在遇到需要校验数据时，也可以使用我们的正则表达式来帮我们完成任务。但是我们在用的时候往往是在网上找他的用法，费时又费力，结果找来的还是不很符合要求。所以我最近把我们日常开发中常用的一些正则表达式整理总结了一下，包括校验数字、字符、一些特殊">
+<meta property="og:type" content="article">
+<meta property="og:title" content="正则表达式实例大全">
+<meta property="og:url" content="http://krzer.com/2015/12/17/regular-expression-example/index.html">
+<meta property="og:site_name" content="Krzer's Blog">
+<meta property="og:description" content="上次在Python爬虫入门里提起过正则表达式，但是由于篇幅有限，并没有很详尽地介绍正则表达式更多的用法。我们知道正则表达式的用途极为广泛，可以在爬虫里的匹配字符，在遇到需要校验数据时，也可以使用我们的正则表达式来帮我们完成任务。但是我们在用的时候往往是在网上找他的用法，费时又费力，结果找来的还是不很符合要求。所以我最近把我们日常开发中常用的一些正则表达式整理总结了一下，包括校验数字、字符、一些特殊">
+<meta property="og:updated_time" content="2015-12-17T12:44:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="正则表达式实例大全">
+<meta name="twitter:description" content="上次在Python爬虫入门里提起过正则表达式，但是由于篇幅有限，并没有很详尽地介绍正则表达式更多的用法。我们知道正则表达式的用途极为广泛，可以在爬虫里的匹配字符，在遇到需要校验数据时，也可以使用我们的正则表达式来帮我们完成任务。但是我们在用的时候往往是在网上找他的用法，费时又费力，结果找来的还是不很符合要求。所以我最近把我们日常开发中常用的一些正则表达式整理总结了一下，包括校验数字、字符、一些特殊">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Krzer&#39;s Blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Krzer&#39;s Blog" title="Krzer&#39;s Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Krzer&#39;s Blog">Krzer&#39;s Blog</a></h1>
+				<h2 class="blog-motto">Talk Is Cheap, Show Me The Code</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页 | Home</a></li>
+					
+						<li><a href="/archives">归档 | Archives</a></li>
+					
+						<li><a href="/about">简介 | About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:krzer.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/12/17/regular-expression-example/" title="正则表达式实例大全" itemprop="url">正则表达式实例大全</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="krzer" target="_blank" itemprop="author">krzer</a>
+		
+  <p class="article-time">
+    <time datetime="2015-12-17T12:21:00.000Z" itemprop="datePublished"> 发表于 2015-12-17</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#校验数字的表达式"><span class="toc-number">1.</span> <span class="toc-text">校验数字的表达式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#校验字符的表达式"><span class="toc-number">2.</span> <span class="toc-text">校验字符的表达式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#特殊需求表达式"><span class="toc-number">3.</span> <span class="toc-text">特殊需求表达式</span></a></li></ol>
+		
+		</div>
+		
+		<p>上次在<a href="http://krzer.com/2015/11/29/Python3-spider-start/">Python爬虫入门</a>里提起过正则表达式，但是由于篇幅有限，并没有很详尽地介绍正则表达式更多的用法。我们知道正则表达式的用途极为广泛，可以在爬虫里的匹配字符，在遇到需要校验数据时，也可以使用我们的正则表达式来帮我们完成任务。但是我们在用的时候往往是在网上找他的用法，费时又费力，结果找来的还是不很符合要求。所以我最近把我们日常开发中常用的一些正则表达式整理总结了一下，包括校验数字、字符、一些特殊的需求等等。一来给自己留个底，二来方便大家需要的时候查阅，毕竟我们写博客的目的就是避免重复造轮子嘛。</p>
+<a id="more"></a>
+<h1 id="校验数字的表达式"><a href="#校验数字的表达式" class="headerlink" title="校验数字的表达式"></a>校验数字的表达式</h1><figure class="highlight markdown"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">数字： ^[0-9]*$</div><div class="line">n位的数字： ^\d&#123;n&#125;$</div><div class="line">至少n位的数字： ^\d&#123;n,&#125;$</div><div class="line">m-n位的数字： ^\d&#123;m,n&#125;$</div><div class="line">零和非零开头的数字： ^(0|[<span class="string">1-9</span>][<span class="symbol">0-9</span>]*)$</div><div class="line">非零开头的最多带两位小数的数字： ^([<span class="string">1-9</span>][<span class="symbol">0-9</span>]*)+(.[0-9]&#123;1,2&#125;)?$</div><div class="line">带1-2位小数的正数或负数： ^(\-)?\d+(\.\d&#123;1,2&#125;)?$</div><div class="line">有两位小数的正实数： ^[0-9]+(.[0-9]&#123;2&#125;)?$</div><div class="line">有1~3位小数的正实数： ^[0-9]+(.[0-9]&#123;1,3&#125;)?$</div><div class="line">正数、负数、和小数： ^(\-|\+)?\d+(\.\d+)?$</div><div class="line">非负整数： ^\d+$ 或 ^[1-9]\d*|0$</div><div class="line">非正整数： ^-[1-9]\d*|0$ 或 ^((-\d+)|(0+))$</div><div class="line">非零的正整数： ^[<span class="string">1-9</span>]\d<span class="emphasis">*$ 或 ^([1-9][0-9]*</span>)&#123;1,3&#125;$ 或 ^\+?[<span class="string">1-9</span>][<span class="symbol">0-9</span>]*$</div><div class="line">非零的负整数： ^\-[<span class="string">1-9</span>][<span class="symbol"></span>]0-9"<span class="emphasis">*$ 或 ^-[1-9]\d*</span>$</div><div class="line">非负浮点数： ^\d+(\.\d+)?$ 或 ^[1-9]\d<span class="emphasis">*\.\d*</span>|0\.\d<span class="emphasis">*[1-9]\d*</span>|0?\.0+|0$</div><div class="line">非正浮点数： ^((-\d+(\.\d+)?)|(0+(\.0+)?))$ 或 ^(-([1-9]\d<span class="emphasis">*\.\d*</span>|0\.\d<span class="emphasis">*[1-9]\d*</span>))|0?\.0+|0$</div><div class="line">正浮点数： ^[<span class="string">1-9</span>]\d<span class="emphasis">*\.\d*</span>|0\.\d<span class="emphasis">*[1-9]\d*</span>$ 或 ^(([<span class="string">0-9</span>]+\.[<span class="string">0-9</span>]<span class="emphasis">*[1-9][0-9]*</span>)|([<span class="string">0-9</span>]<span class="emphasis">*[1-9][0-9]*</span>\.[<span class="string">0-9</span>]+)|([<span class="string">0-9</span>]<span class="emphasis">*[1-9][0-9]*</span>))$</div><div class="line">负浮点数： ^-([<span class="string">1-9</span>]\d<span class="emphasis">*\.\d*</span>|0\.\d<span class="emphasis">*[1-9]\d*</span>)$ 或 ^(-(([<span class="string">0-9</span>]+\.[<span class="string">0-9</span>]<span class="emphasis">*[1-9][0-9]*</span>)|([<span class="string">0-9</span>]<span class="emphasis">*[1-9][0-9]*</span>\.[<span class="string">0-9</span>]+)|([<span class="string">0-9</span>]<span class="emphasis">*[1-9][0-9]*</span>)))$</div><div class="line">浮点数： ^(-?\d+)(\.\d+)?$ 或 ^-?([1-9]\d<span class="emphasis">*\.\d*</span>|0\.\d<span class="emphasis">*[1-9]\d*</span>|0?\.0+|0)$</div></pre></td></tr></table></figure>
+<h1 id="校验字符的表达式"><a href="#校验字符的表达式" class="headerlink" title="校验字符的表达式"></a>校验字符的表达式</h1><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">汉字： ^[\u4e00-\u9fa5]&#123;<span class="number">0</span>,&#125;$</div><div class="line">英文和数字： ^[A-Za-z0<span class="number">-9</span>]+$ 或 ^[A-Za-z0<span class="number">-9</span>]&#123;<span class="number">4</span>,<span class="number">40</span>&#125;$</div><div class="line">长度为<span class="number">3</span><span class="number">-20</span>的所有字符： ^.&#123;<span class="number">3</span>,<span class="number">20</span>&#125;$</div><div class="line">由<span class="number">26</span>个大写英文字母组成的字符串： ^[A-Z]+$</div><div class="line">由<span class="number">26</span>个小写英文字母组成的字符串： ^[a-z]+$</div><div class="line">由<span class="number">26</span>个英文字母组成的字符串： ^[A-Za-z]+$</div><div class="line">由数字和<span class="number">26</span>个英文字母组成的字符串： ^[A-Za-z0<span class="number">-9</span>]+$</div><div class="line">中文、英文、数字包括下划线： ^[\u4E00-\u9FA5A-Za-z0<span class="number">-9</span>_]+$</div><div class="line">由数字、<span class="number">26</span>个英文字母或者下划线组成的字符串： ^\w+$ 或 ^\w&#123;<span class="number">3</span>,<span class="number">20</span>&#125;$</div><div class="line">中文、英文、数字但不包括下划线等符号： ^[\u4E00-\u9FA5A-Za-z0<span class="number">-9</span>]+$ 或 ^[\u4E00-\u9FA5A-Za-z0<span class="number">-9</span>]&#123;<span class="number">2</span>,<span class="number">20</span>&#125;$</div><div class="line">可以输入含有^%&amp;’,;=?$\”等字符： [^%&amp;',;=?$\x22]+</div><div class="line">禁止输入含有~的字符： [^~\x22]+</div></pre></td></tr></table></figure>
+<h1 id="特殊需求表达式"><a href="#特殊需求表达式" class="headerlink" title="特殊需求表达式"></a>特殊需求表达式</h1><figure class="highlight markdown"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">Email地址： ^\w+([-+.]\w+)<span class="emphasis">*@\w+([-.]\w+)*</span>\.\w+([-.]\w+)*$</div><div class="line">域名： [<span class="string">a-zA-Z0-9</span>][<span class="symbol">-a-zA-Z0-9</span>]&#123;0,62&#125;(/.[<span class="string">a-zA-Z0-9</span>][<span class="symbol">-a-zA-Z0-9</span>]&#123;0,62&#125;)+/.?</div><div class="line">InternetURL： [a-zA-z]+://[^\s]<span class="bullet">* 或 ^http://([\w-]+\.)+[\w-]+(/[\w-./?%&amp;=]*</span>)?$</div><div class="line">手机号码： ^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d&#123;8&#125;$</div><div class="line">身份证号(15位、18位数字)： ^\d&#123;15&#125;|\d&#123;18&#125;$</div><div class="line">短身份证号码(数字、字母x结尾)： ^([0-9])&#123;7,18&#125;(x|X)?$ 或 ^\d&#123;8,18&#125;|[0-9x]&#123;8,18&#125;|[0-9X]&#123;8,18&#125;?$</div><div class="line">电话号码(“XXX-XXXXXXX”、”XXXX-XXXXXXXX”、”XXX-XXXXXXX”、”XXX-XXXXXXXX”、”XXXXXXX”和”XXXXXXXX)： ^($$\d&#123;3,4&#125;-)|\d&#123;3.4&#125;-)?\d&#123;7,8&#125;$</div><div class="line">国内电话号码(0511-4405222、021-87888822)： \d&#123;3&#125;-\d&#123;8&#125;|\d&#123;4&#125;-\d&#123;7&#125;</div><div class="line">帐号是否合法(字母开头，允许5-16字节，允许字母数字下划线)： ^[<span class="string">a-zA-Z</span>][<span class="symbol">a-zA-Z0-9_</span>]&#123;4,15&#125;$</div><div class="line">密码(以字母开头，长度在6~18之间，只能包含字母、数字和下划线)： ^[a-zA-Z]\w&#123;5,17&#125;$</div><div class="line">强密码(必须包含大小写字母和数字的组合，不能使用特殊字符，长度在8-10之间)： ^(?=.<span class="emphasis">*\d)(?=.*</span>[a-z])(?=.*[A-Z]).&#123;8,10&#125;$</div><div class="line">日期格式： ^\d&#123;4&#125;-\d&#123;1,2&#125;-\d&#123;1,2&#125;</div><div class="line">一年的12个月(01～09和1～12)： ^(0?[1-9]|1[0-2])$</div><div class="line">一个月的31天(01～09和1～31)： ^((0?[1-9])|((1|2)[0-9])|30|31)$</div><div class="line">xml文件： ^([<span class="string">a-zA-Z</span>]+-?)+[<span class="string">a-zA-Z0-9</span>]+\\.[<span class="string">x|X</span>][<span class="symbol">m|M</span>][<span class="string">l|L</span>]$</div><div class="line">中文字符的正则表达式： [\u4e00-\u9fa5]</div><div class="line">双字节字符： [^\x00-\xff] (包括汉字在内，可以用来计算字符串的长度(一个双字节字符长度计2，ASCII字符计1))</div><div class="line">空白行的正则表达式： \n\s*\r (可以用来删除空白行)</div><div class="line">HTML标记的正则表达式： <span class="xml"><span class="tag">&lt;<span class="name">(\S*?)[^</span>&gt;</span></span>]<span class="emphasis">*&gt;.*</span>?<span class="xml"><span class="tag">&lt;/<span class="name">\1</span>&gt;</span></span>|<span class="xml"><span class="tag">&lt;<span class="name">.*?</span> /&gt;</span></span> (网上流传的版本太糟糕，上面这个也仅仅能部分，对于复杂的嵌套标记依旧无能为力)</div><div class="line">首尾空白字符的正则表达式： ^\s<span class="emphasis">*|\s*</span>$或(^\s<span class="emphasis">*)|(\s*</span>$) (可以用来删除行首行尾的空白字符(包括空格、制表符、换页符等等)，非常有用的表达式)</div><div class="line">腾讯QQ号： [<span class="string">1-9</span>][<span class="symbol">0-9</span>]&#123;4,&#125; (腾讯QQ号从10000开始)</div><div class="line">中国邮政编码： [1-9]\d&#123;5&#125;(?!\d) (中国邮政编码为6位数字)</div><div class="line">IP地址： \d+\.\d+\.\d+\.\d+ (提取IP地址时有用)</div><div class="line">IP地址： ((?:(?:25[0-5]|2[0-4]\\d|[01]?\\d?\\d)\\.)&#123;3&#125;(?:25[0-5]|2[0-4]\\d|[01]?\\d?\\d)) </div><div class="line">钱的输入格式：</div><div class="line"><span class="code">     ● 有四种钱的表示形式我们可以接受:”10000.00″ 和 “10,000.00″, 和没有 “分” 的 “10000″ 和 “10,000″：^[1-9][0-9]*$</span></div><div class="line"><span class="code">     ● 这表示任意一个不以0开头的数字，但是，这也意味着一个字符”0″不通过，所以我们采用下面的形式：^(0|[1-9][0-9]*)$</span></div><div class="line"><span class="code">     ● 一个0或者一个不以0开头的数字.我们还可以允许开头有一个负号：^(0|-?[1-9][0-9]*)$</span></div><div class="line"><span class="code">     ● 这表示一个0或者一个可能为负的开头不为0的数字.让用户以0开头好了.把负号的也去掉，因为钱总不能是负的吧.下面我们要加的是说明可能的小数部分：^[0-9]+(.[0-9]+)?$</span></div><div class="line"><span class="code">     ● 必须说明的是，小数点后面至少应该有1位数，所以”10.”是不通过的，但是 “10″ 和 “10.2″ 是通过的：^[0-9]+(.[0-9]&#123;2&#125;)?$</span></div><div class="line"><span class="code">     ● 这样我们规定小数点后面必须有两位，如果你认为太苛刻了，可以这样：^[0-9]+(.[0-9]&#123;1,2&#125;)?$</span></div><div class="line"><span class="code">     ● 这样就允许用户只写一位小数。下面我们该考虑数字中的逗号了，我们可以这样：^[0-9]&#123;1,3&#125;(,[0-9]&#123;3&#125;)*(.[0-9]&#123;1,2&#125;)?$</span></div><div class="line"><span class="code">     ● 1到3个数字，后面跟着任意个 逗号+3个数字，逗号成为可选，而不是必须：^([0-9]+|[0-9]&#123;1,3&#125;(,[0-9]&#123;3&#125;)*)(.[0-9]&#123;1,2&#125;)?$</span></div><div class="line"><span class="code">     ● 备注：这就是最终结果了，别忘了”+”可以用”*”替代。如果你觉得空字符串也可以接受的话(奇怪，为什么?)最后，别忘了在用函数时去掉去掉那个反斜杠，一般的错误都在这里</span></div></pre></td></tr></table></figure>
+<p>文章出自：<a href="http://krzer.com/">Krzer</a> <a href="http://krzer.com/">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/代码之路/">代码之路</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/数据结构/">数据结构</a><a href="/tags/正则表达式/">正则表达式</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://krzer.com/2015/12/17/regular-expression-example/" data-title="正则表达式实例大全 | Krzer&#39;s Blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2015/12/10/Python-_data-structure(2)/"  title="Python数据结构（二）">
+ <strong>下一篇：</strong><br/> 
+ <span>Python数据结构（二）
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/12/17/regular-expression-example/" data-title="正则表达式实例大全" data-url="http://krzer.com/2015/12/17/regular-expression-example/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#校验数字的表达式"><span class="toc-number">1.</span> <span class="toc-text">校验数字的表达式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#校验字符的表达式"><span class="toc-number">2.</span> <span class="toc-text">校验字符的表达式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#特殊需求表达式"><span class="toc-number">3.</span> <span class="toc-text">特殊需求表达式</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/代码之路/" title="代码之路">代码之路<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.yuzhaoge.com/" target="_blank" title="余朝歌的博客">余朝歌的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.03sec.com/" target="_blank" title="Sky’s自留地">Sky’s自留地</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Krzer. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/611233942" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/krzer" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:krzer@qq.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2016 
+		
+		<a href="http://krzer.com/about" target="_blank" title="krzer">krzer</a>
+		
+		<a href="http://tongji.baidu.com/web/welcome/ico?s=716f8753758979a471ff0797e371977d" target="_blank">百度统计</a><br/>
+		本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 本站访客数 <span id="busuanzi_value_site_uv"></span> 人次, 本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次
+		</p>
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"krzer"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?716f8753758979a471ff0797e371977d";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
