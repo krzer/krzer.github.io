@@ -20,7 +20,7 @@
 <meta property="og:url" content="http://krzer.com/2016/10/27/Computer-Startup-Analysis/index.html">
 <meta property="og:site_name" content="Krzer's Blog">
 <meta property="og:description" content="我小的时候一直有个疑问，电脑是怎么启动的，当我们按下电源键的时候，电脑内部是怎么运行的，总不能是电源键和操作系统捆绑在一起，形成一个事件吧@_@。这个问题一直在困扰着我，我一直都不知道这其中到底是怎么一回事，这几天碰巧看到一些关于MBR（即主引导记录）的文章，脑袋里大概有了那么点概念了，想想好像是那么一回事。这几天，经过查阅相关资料，在这里整理一下我梳理的笔记。">
-<meta property="og:updated_time" content="2016-10-27T06:05:51.655Z">
+<meta property="og:updated_time" content="2016-10-27T06:06:43.924Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="计算机启动分析">
 <meta name="twitter:description" content="我小的时候一直有个疑问，电脑是怎么启动的，当我们按下电源键的时候，电脑内部是怎么运行的，总不能是电源键和操作系统捆绑在一起，形成一个事件吧@_@。这个问题一直在困扰着我，我一直都不知道这其中到底是怎么一回事，这几天碰巧看到一些关于MBR（即主引导记录）的文章，脑袋里大概有了那么点概念了，想想好像是那么一回事。这几天，经过查阅相关资料，在这里整理一下我梳理的笔记。">
@@ -146,25 +146,19 @@
 <p>然后，init线程加载系统的各个模块，比如窗口程序和网络程序，直至执行/bin/login程序，跳出登录界面，等待用户输入用户名和密码。</p>
 <p>至此，全部启动过程完成。</p>
 <p><strong>P.s.以下内容有时间的时候我会再深入研究，并总结出来</strong></p>
-<ol>
-<li>我们的系统只有四个主分区，那为什么有的计算机能够分不止四个区呢？</li>
-</ol>
+<p>1.我们的系统只有四个主分区，那为什么有的计算机能够分不止四个区呢？</p>
 <blockquote>
 <p>随着硬盘越来越大，四个主分区已经不够了，需要更多的分区。但是，分区表只有四项，因此规定有且仅有一个区可以被定义成”扩展分区”（Extended partition）。</p>
 <p>所谓”扩展分区”，就是指这个区里面又分成多个区。这种分区里面的分区，就叫做”逻辑分区”（logical partition）。</p>
 <p>计算机先读取扩展分区的第一个扇区，叫做”扩展引导记录”（Extended boot record，缩写为EBR）。它里面也包含一张64字节的分区表，但是最多只有两项（也就是两个逻辑分区）。</p>
 <p>计算机接着读取第二个逻辑分区的第一个扇区，再从里面的分区表中找到第三个逻辑分区的位置，以此类推，直到某个逻辑分区的分区表只包含它自身为止（即只有一个分区项）。因此，扩展分区可以包含无数个逻辑分区。</p>
 </blockquote>
-<ol>
-<li>MBR支持的最大分区为2TB，有没有其他方法可以让我们的系统支持更大的分区？</li>
-</ol>
+<p>2.MBR支持的最大分区为2TB，有没有其他方法可以让我们的系统支持更大的分区？</p>
 <blockquote>
 <p>答案是有，GPT可以满足你的要求！</p>
 <p>与支持最大卷为2 TB（Terabytes）并且每个磁盘最多有4个主分区（或3个主分区，1个扩展分区和无限制的逻辑驱动器）的MBR磁盘分区的样式相比，GPT磁盘分区样式支持最大卷为18 EB（Exabytes）并且每磁盘的分区数没有上限，只受到操作系统限制（由于分区表本身需要占用一定空间，最初规划硬盘分区时，留给分区表的空间决定了最多可以有多少个分区，IA-64版Windows限制最多有128个分区，这也是EFI标准规定的分区表的最小尺寸）。与MBR分区的磁盘不同，至关重要的平台操作数据位于分区，而不是位于非分区或隐藏扇区。另外，GPT分区磁盘有备份分区表来提高分区数据结构的完整性。</p>
 </blockquote>
-<ol>
-<li>UEFI和BIOS的区别？</li>
-</ol>
+<p>3.UEFI和BIOS的区别？</p>
 <blockquote>
 <p>暂时不太清楚，以后再慢慢深入@_@~</p>
 </blockquote>
@@ -278,15 +272,15 @@
 			
 		
 			
-				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/opencv/" title="opencv">opencv<sup>1</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/windows/" title="windows">windows<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>1</sup></a></li>
 			
 		
 		</ul>
