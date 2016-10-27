@@ -1,0 +1,583 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>计算机启动分析 | Krzer&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="krzer">
+    
+    
+    <meta name="keywords" content="python,krzer">
+    
+    
+    
+    <meta name="description" content="在此处输入标题标签（空格分隔）： 未分类
+
+我小的时候一直有个疑问，电脑是怎么启动的，当我们按下电源键的时候，电脑内部是怎么运行的，总不能是电源键和操作系统捆绑在一起，形成一个事件吧@_@。这个问题一直在困扰着我，我一直都不知道这其中到底是怎么一回事，这几天碰巧看到一些关于MBR（即主引导记录）的文章，脑袋里大概有了那么点概念了，想想好像是那么一回事。这几天，经过查阅相关资料，在这里整理一下我梳理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机启动分析">
+<meta property="og:url" content="http://krzer.com/2016/10/27/Computer-Startup-Analysis/index.html">
+<meta property="og:site_name" content="Krzer's Blog">
+<meta property="og:description" content="在此处输入标题标签（空格分隔）： 未分类
+
+我小的时候一直有个疑问，电脑是怎么启动的，当我们按下电源键的时候，电脑内部是怎么运行的，总不能是电源键和操作系统捆绑在一起，形成一个事件吧@_@。这个问题一直在困扰着我，我一直都不知道这其中到底是怎么一回事，这几天碰巧看到一些关于MBR（即主引导记录）的文章，脑袋里大概有了那么点概念了，想想好像是那么一回事。这几天，经过查阅相关资料，在这里整理一下我梳理">
+<meta property="og:updated_time" content="2016-10-27T06:01:36.993Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="计算机启动分析">
+<meta name="twitter:description" content="在此处输入标题标签（空格分隔）： 未分类
+
+我小的时候一直有个疑问，电脑是怎么启动的，当我们按下电源键的时候，电脑内部是怎么运行的，总不能是电源键和操作系统捆绑在一起，形成一个事件吧@_@。这个问题一直在困扰着我，我一直都不知道这其中到底是怎么一回事，这几天碰巧看到一些关于MBR（即主引导记录）的文章，脑袋里大概有了那么点概念了，想想好像是那么一回事。这几天，经过查阅相关资料，在这里整理一下我梳理">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Krzer&#39;s Blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Krzer&#39;s Blog" title="Krzer&#39;s Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Krzer&#39;s Blog">Krzer&#39;s Blog</a></h1>
+				<h2 class="blog-motto">Talk Is Cheap, Show Me The Code</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页 | Home</a></li>
+					
+						<li><a href="/archives">归档 | Archives</a></li>
+					
+						<li><a href="/about">简介 | About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:krzer.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/10/27/Computer-Startup-Analysis/" title="计算机启动分析" itemprop="url">计算机启动分析</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="krzer" target="_blank" itemprop="author">krzer</a>
+		
+  <p class="article-time">
+    <time datetime="2016-10-27T05:57:04.000Z" itemprop="datePublished"> 发表于 2016-10-27</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#在此处输入标题"><span class="toc-number">1.</span> <span class="toc-text">在此处输入标题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第一阶段：BIOS"><span class="toc-number">2.</span> <span class="toc-text">第一阶段：BIOS</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#BIOS进行POST"><span class="toc-number">2.1.</span> <span class="toc-text">BIOS进行POST</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#启动顺序"><span class="toc-number">2.2.</span> <span class="toc-text">启动顺序</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第二阶段：MBR"><span class="toc-number">3.</span> <span class="toc-text">第二阶段：MBR</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#MBR的结构"><span class="toc-number">3.1.</span> <span class="toc-text">MBR的结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分区表"><span class="toc-number">3.2.</span> <span class="toc-text">分区表</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#开机管理程序（boot-loader）"><span class="toc-number">4.</span> <span class="toc-text">开机管理程序（boot loader）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#提供菜单"><span class="toc-number">4.1.</span> <span class="toc-text">提供菜单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#载入核心文件"><span class="toc-number">4.2.</span> <span class="toc-text">载入核心文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#转交其他loader"><span class="toc-number">4.3.</span> <span class="toc-text">转交其他loader</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第四阶段：操作系统"><span class="toc-number">5.</span> <span class="toc-text">第四阶段：操作系统</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="在此处输入标题"><a href="#在此处输入标题" class="headerlink" title="在此处输入标题"></a>在此处输入标题</h1><p>标签（空格分隔）： 未分类</p>
+<hr>
+<p>我小的时候一直有个疑问，电脑是怎么启动的，当我们按下电源键的时候，电脑内部是怎么运行的，总不能是电源键和操作系统捆绑在一起，形成一个事件吧@_@。这个问题一直在困扰着我，我一直都不知道这其中到底是怎么一回事，这几天碰巧看到一些关于MBR（即主引导记录）的文章，脑袋里大概有了那么点概念了，想想好像是那么一回事。这几天，经过查阅相关资料，在这里整理一下我梳理的笔记。<br><a id="more"></a></p>
+<p>买来的零件，组装起来成为一部台式计算机，此时就像是一副空空的躯体一样，他是没有灵魂的，不过好在他还带有一张铭牌，记录着他身上每个部位的信息。这个铭牌就是我们所说的CMOS芯片，这块在主板上小小的芯片是主板上的一块可读写的并行或串行FLASH芯片，是用来保存BIOS的硬件配置和用户对某些参数的设定的。CMOS本质上他其实是一块可读写的<strong>RAM芯片</strong>，需要配合主板上的CMOS电池一起工作，这也就是为什么我们的计算机关机后，下次开机时时间依然是正确的原因了。所以我们的计算机上的一些基本启动信息（如日期、时间、启动设置）如果错误的话，多半是CMOS或是CMOS电池的问题了。当然，绝大多数的用户通常不会关心CMOS的硬件问题，而只关心写在CMOS上的信息，也就是BIOS的设置问题，其中提到最多的就是系统故障时拿掉主板上的电池，进行CMOS放电操作，从而还原BIOS设置。</p>
+<p>BIOS是英文”Basic Input Output System”的缩略词，直译过来后中文名称就是”基本输入输出系统”。其实，它是一组固化到计算机内主板上一个ROM芯片上的程序，它保存着计算机最重要的基本输入输出的程序、开机后自检程序和系统自启动程序，它可从CMOS中读写系统设置的具体信息。装过系统的人都知道，我们在设置启动盘启动的时候，进入的那个界面（一般为蓝色）就是我们这里所说的BIOS。不同的BIOS系统进入的方式不一样，一般为Delete键。</p>
+<p>好了，下面我们进入正题，计算机的整个启动过程可以分为四个阶段。</p>
+<h1 id="第一阶段：BIOS"><a href="#第一阶段：BIOS" class="headerlink" title="第一阶段：BIOS"></a>第一阶段：BIOS</h1><p>当我们按下电源键时，主板即被唤醒，读取主板上的固件BIOS，BIOS开始运行。</p>
+<h2 id="BIOS进行POST"><a href="#BIOS进行POST" class="headerlink" title="BIOS进行POST"></a>BIOS进行POST</h2><p>BIOS启动时首先要做的事情就是进行POST（Power-OnSelfTest，加电自检），POST的主要任务就是检测系统中一些关键的硬件设备是否能够正常工作。如果硬件出现问题，主板便会发出不同的“蜂鸣”声来告诉我们硬件出现问题，启动终止。如果没有问题，电脑则会显示BIOS的启动画面，包括硬件信息（例如CPU、内存、硬盘等）和BIOS的类型、序列号和版本号等。在正常的情况下，POST过程进行的非常的快，我们几乎无法察觉到它的存在。</p>
+<h2 id="启动顺序"><a href="#启动顺序" class="headerlink" title="启动顺序"></a>启动顺序</h2><p>当完成BIOS的POST过程时，BIOS将执行最后一项任务：按照用户在BIOS界面指定的启动顺序（Boot Sequence）进行启动（一般默认为主机硬盘，如果是安装系统的话，也可以是光驱和一些USB存储设备）。</p>
+<p>其实BIOS在这里做的任务主要就是根据用户设定的启动顺序，将系统的控制权转交给启动顺序指定存储设备中的启动程序。也就是BIOS只需要知道，“下一阶段的启动程序”存放在哪一个存储设备中即可，寻找的途径就是按照启动顺序依次进行，找不到则跳到下一存储设备。</p>
+<h1 id="第二阶段：MBR"><a href="#第二阶段：MBR" class="headerlink" title="第二阶段：MBR"></a>第二阶段：MBR</h1><p>MBR，在上面也说了，就是主引导记录。排在启动顺序第一位的存储设备在拿到BIOS转交的系统控制权后，这时，计算机就会读取设备的第一个扇区，也就是读取最前面的512字节（因为目前的磁盘的每个扇区就是512字节）。如果这512个字节的最后两个字节是0x55和0xAA，表明这个设备可以用于启动；如果不是，表明设备不能用于启动，控制权于是被转交给启动顺序中的下一个设备。</p>
+<h2 id="MBR的结构"><a href="#MBR的结构" class="headerlink" title="MBR的结构"></a>MBR的结构</h2><p>MBR只有512个字节，放不了太多东西。它的主要作用是告诉计算机到硬盘的哪一个位置去找操作系统。</p>
+<p>主引导记录由三个部分组成：</p>
+<blockquote>
+<ol>
+<li>第一部分（第1-446字节）：调用操作系统的主引导程序（boot loader）。</li>
+<li>第二部分(第447-510字节)：分区表（Partition table区），即DPT，占64个字节，硬盘中分区有多少以及每一分区的大小都记在其中。</li>
+<li>第三部分（第511-512字节）：主引导记录签名（magic number），占2个字节，（0x55和0xAA）。</li>
+</ol>
+</blockquote>
+<h2 id="分区表"><a href="#分区表" class="headerlink" title="分区表"></a>分区表</h2><p>分区表的作用就是将硬盘分成若干个区。安装个操作系统的人都知道，在装之前一般都要进行分区，当然你只使用一个分区并不会出现什么问题，只是会给使用上带来一些不方便罢了。</p>
+<p>硬盘分区有利于我们对硬盘的管理，而且分区有一个很重要的优点是，我们在每个区都可以安装不同的操作系统，这对于我们喜欢折腾的人来说，可是省了一大笔花销呢。“生命不息，折腾不止”，正是由于每个区都可以安装不同的操作系统，所以我们的MBR必须知道要将系统的控制权交给哪个系统（这个将在下面详细讲）。</p>
+<p>分区表的长度只有64个字节，在其中每个分区又占用16个字节，所以分区表只能记录4个分区的信息，这样的一级分区我们把它叫做主分区。这就是硬盘的主分区数目不能超过4个的原因。</p>
+<p>每个主分区的16个字节，由6个部分组成：</p>
+<blockquote>
+<p>　　（1） 第1个字节：如果为0x80，就表示该主分区是激活分区，控制权要转交给这个分区。四个主分区里面只能有一个是激活的。<br>　　（2） 第2-4个字节：主分区第一个扇区的物理位置（柱面、磁头、扇区号等等）。<br>　　（3） 第5个字节：主分区类型。<br>　　（4） 第6-8个字节：主分区最后一个扇区的物理位置。<br>　　（5） 第9-12字节：该主分区第一个扇区的逻辑地址。<br>　　（6） 第13-16字节：主分区的扇区总数。　</p>
+</blockquote>
+<p>最后的四个字节（”主分区的扇区总数”），决定了这个主分区的长度。也就是说，一个主分区的扇区总数最多不超过2的32次方。<br>如果每个扇区为512个字节，就意味着单个分区最大不超过2TB。再考虑到扇区的逻辑地址也是32位，所以单个硬盘可利用的空间最大也不超过2TB。如果想使用更大的硬盘，只有2个方法：一是提高每个扇区的字节数，二是增加扇区总数。</p>
+<h1 id="开机管理程序（boot-loader）"><a href="#开机管理程序（boot-loader）" class="headerlink" title="开机管理程序（boot loader）"></a>开机管理程序（boot loader）</h1><p>这时，计算机的控制权就要转交给MBR中的开机管理程序了。开机管理程序（boot loader）是一个可以读取操作系统核心文件的程序。所以说这个开机管理程序的目的是在载入（load）核心文件，由于开机管理程序是操作系统在安装的时候所提供的，所以他会认识硬盘内的文件系统格式，因此就能够读取核心文件。</p>
+<p>由上面的说明我们会知道，BIOS与MBR都是硬件本身会支持的功能，至于boot loader则是操作系统安装在MBR上面的一套软件了。由于MBR仅有446 字节而已，因此这个开机管理程序是非常小而美的。 这个boot loader的主要任务有下面这些项目：</p>
+<ul>
+<li>提供菜单：使用者可以选择不同的开机项目，这也是多重开机的重要功能！</li>
+<li>载入核心文件：直接指向可开机的程序区段来开始操作系统；</li>
+<li>转交其他loader：将开机管理功能转交给其他loader负责。</li>
+</ul>
+<h2 id="提供菜单"><a href="#提供菜单" class="headerlink" title="提供菜单"></a>提供菜单</h2><p>提供菜单就是在开机要进入系统之前，出现一个系统选择界面，由用户选择启动哪一个操作系统，想必装过双系统的人应该都知道吧。</p>
+<p>在windows平台下，我们最常用的系统引导软件就是EasyBCD了，每次装完双系统，莫名其妙进不去的时候，就用它来修复一下，分分钟解决问题。</p>
+<p>Linux环境中，目前最流行的启动管理器是Grub。</p>
+<h2 id="载入核心文件"><a href="#载入核心文件" class="headerlink" title="载入核心文件"></a>载入核心文件</h2><p>载入核心文件就是boot loader会自动识别自己的系统盘内的可开机核心文件，并运行它，将计算机的控制权转交给它。</p>
+<h2 id="转交其他loader"><a href="#转交其他loader" class="headerlink" title="转交其他loader"></a>转交其他loader</h2><p>这一点很有趣呢！这表示你的计算机系统里面可能具有两个以上的开机管理程序呢！什么？你说什么？Are you kidding me？我们的硬盘不是只有一个MBR而已？是的没错，不过开机管理程序除了可以安装在MBR之外， 还可以安装在每个分区的引导扇区（boot sector）。没错，这个特色才能造就“多重开机”的功能啊！</p>
+<h1 id="第四阶段：操作系统"><a href="#第四阶段：操作系统" class="headerlink" title="第四阶段：操作系统"></a>第四阶段：操作系统</h1><p>boot loader将控制权转交给操作系统后，操作系统的内核首先被载入内存。</p>
+<p>以Linux系统为例，先载入/boot目录下面的kernel。内核加载成功后，第一个运行的程序是/sbin/init。它根据配置文件（Debian系统是/etc/initab）产生init进程。这是Linux启动后的第一个进程，pid进程编号为1，其他进程都是它的后代。</p>
+<p>然后，init线程加载系统的各个模块，比如窗口程序和网络程序，直至执行/bin/login程序，跳出登录界面，等待用户输入用户名和密码。</p>
+<p>至此，全部启动过程完成。</p>
+<p><strong>P.s.以下内容有时间的时候我会再深入研究，并总结出来</strong></p>
+<ol>
+<li>我们的系统只有四个主分区，那为什么有的计算机能够分不止四个区呢？</li>
+</ol>
+<blockquote>
+<p>随着硬盘越来越大，四个主分区已经不够了，需要更多的分区。但是，分区表只有四项，因此规定有且仅有一个区可以被定义成”扩展分区”（Extended partition）。</p>
+<p>所谓”扩展分区”，就是指这个区里面又分成多个区。这种分区里面的分区，就叫做”逻辑分区”（logical partition）。</p>
+<p>计算机先读取扩展分区的第一个扇区，叫做”扩展引导记录”（Extended boot record，缩写为EBR）。它里面也包含一张64字节的分区表，但是最多只有两项（也就是两个逻辑分区）。</p>
+<p>计算机接着读取第二个逻辑分区的第一个扇区，再从里面的分区表中找到第三个逻辑分区的位置，以此类推，直到某个逻辑分区的分区表只包含它自身为止（即只有一个分区项）。因此，扩展分区可以包含无数个逻辑分区。</p>
+</blockquote>
+<ol>
+<li>MBR支持的最大分区为2TB，有没有其他方法可以让我们的系统支持更大的分区？</li>
+</ol>
+<blockquote>
+<p>答案是有，GPT可以满足你的要求！</p>
+<p>与支持最大卷为2 TB（Terabytes）并且每个磁盘最多有4个主分区（或3个主分区，1个扩展分区和无限制的逻辑驱动器）的MBR磁盘分区的样式相比，GPT磁盘分区样式支持最大卷为18 EB（Exabytes）并且每磁盘的分区数没有上限，只受到操作系统限制（由于分区表本身需要占用一定空间，最初规划硬盘分区时，留给分区表的空间决定了最多可以有多少个分区，IA-64版Windows限制最多有128个分区，这也是EFI标准规定的分区表的最小尺寸）。与MBR分区的磁盘不同，至关重要的平台操作数据位于分区，而不是位于非分区或隐藏扇区。另外，GPT分区磁盘有备份分区表来提高分区数据结构的完整性。</p>
+</blockquote>
+<ol>
+<li>UEFI和BIOS的区别？</li>
+</ol>
+<blockquote>
+<p>暂时不太清楚，以后再慢慢深入@_@~</p>
+</blockquote>
+<p>文章出自：<a href="http://krzer.com/">Krzer</a> <a href="http://krzer.com/">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/理解计算机/">理解计算机</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/系统/">系统</a><a href="/tags/计算机/">计算机</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://krzer.com/2016/10/27/Computer-Startup-Analysis/" data-title="计算机启动分析 | Krzer&#39;s Blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2016/10/18/windows-python-opencv/"  title="Python环境下OpenCV的安装">
+ <strong>下一篇：</strong><br/> 
+ <span>Python环境下OpenCV的安装
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/10/27/Computer-Startup-Analysis/" data-title="计算机启动分析" data-url="http://krzer.com/2016/10/27/Computer-Startup-Analysis/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#在此处输入标题"><span class="toc-number">1.</span> <span class="toc-text">在此处输入标题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第一阶段：BIOS"><span class="toc-number">2.</span> <span class="toc-text">第一阶段：BIOS</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#BIOS进行POST"><span class="toc-number">2.1.</span> <span class="toc-text">BIOS进行POST</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#启动顺序"><span class="toc-number">2.2.</span> <span class="toc-text">启动顺序</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第二阶段：MBR"><span class="toc-number">3.</span> <span class="toc-text">第二阶段：MBR</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#MBR的结构"><span class="toc-number">3.1.</span> <span class="toc-text">MBR的结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分区表"><span class="toc-number">3.2.</span> <span class="toc-text">分区表</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#开机管理程序（boot-loader）"><span class="toc-number">4.</span> <span class="toc-text">开机管理程序（boot loader）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#提供菜单"><span class="toc-number">4.1.</span> <span class="toc-text">提供菜单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#载入核心文件"><span class="toc-number">4.2.</span> <span class="toc-text">载入核心文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#转交其他loader"><span class="toc-number">4.3.</span> <span class="toc-text">转交其他loader</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第四阶段：操作系统"><span class="toc-number">5.</span> <span class="toc-text">第四阶段：操作系统</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/代码之路/" title="代码之路">代码之路<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/理解计算机/" title="理解计算机">理解计算机<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/系统/" title="系统">系统<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/计算机/" title="计算机">计算机<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/opencv/" title="opencv">opencv<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/windows/" title="windows">windows<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.yuzhaoge.com/" target="_blank" title="余朝歌的博客">余朝歌的博客</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://www.03sec.com/" target="_blank" title="Sky’s自留地">Sky’s自留地</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Krzer. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/611233942" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/krzer" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:krzer@qq.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2016 
+		
+		<a href="http://krzer.com/about" target="_blank" title="krzer">krzer</a>
+		
+		<a href="http://tongji.baidu.com/web/welcome/ico?s=716f8753758979a471ff0797e371977d" target="_blank">百度统计</a><br/>
+		本站总访问量 <span id="busuanzi_value_site_pv"></span> 次, 本站访客数 <span id="busuanzi_value_site_uv"></span> 人次, 本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次
+		</p>
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script></footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"krzer"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?716f8753758979a471ff0797e371977d";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
