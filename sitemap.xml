@@ -1,77 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset
-      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
-
-<url>
-  <loc>http://krzer.com/</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
-<url>
-  <loc>http://krzer.com/archives/</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
-<url>
-  <loc>http://krzer.com/about/</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
-<url>
-  <loc>http://krzer.com/2016/10/18/windows-python-opencv/</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
-<url>
-  <loc>http://krzer.com/tags/python/</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
-<url>
-  <loc>http://krzer.com/tags/opencv/</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
-<url>
-  <loc>http://krzer.com/tags/windows/</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
-<url>
-  <loc>http://krzer.com/2015/12/17/regular-expression-example/</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
-<url>
-  <loc>http://krzer.com/2015/11/29/Python3-spider-start/</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
-<url>
-  <loc>http://krzer.com/2015/12/10/Python-_data-structure(2)/</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
-<url>
-  <loc>http://krzer.com/2015/12/08/Python-_data-structure(1)/</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
-<url>
-  <loc>http://krzer.com/2015/12/03/Python3-spider-_practice/</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
-<url>
-  <loc>http://krzer.com/2015/11/22/Welcome-To-Krzer/</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
-<url>
-  <loc>http://krzer.com/archives/2016/10/</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
-<url>
-  <loc>http://krzer.com/archives/2015/12/</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
-<url>
-  <loc>http://krzer.com/archives/2015/11/</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
-<url>
-  <loc>http://krzer.com/about/index.html</loc>
-  <lastmod>2016-10-18T10:24:05+00:00</lastmod>
-</url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>http://krzer.com/about/index.html</loc>
+    
+    <lastmod>2016-11-21T14:54:40.787Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://krzer.com/2016/11/21/Something-about-cname-and-mx-conflicts/</loc>
+    
+    <lastmod>2016-11-21T14:51:11.785Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://krzer.com/2016/11/11/Follow-the-interest/</loc>
+    
+    <lastmod>2016-11-13T06:48:48.628Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://krzer.com/2016/10/27/Computer-Startup-Analysis/</loc>
+    
+    <lastmod>2016-10-27T06:09:06.334Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://krzer.com/404.html</loc>
+    
+    <lastmod>2016-10-19T15:39:27.869Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://krzer.com/2016/10/18/windows-python-opencv/</loc>
+    
+    <lastmod>2016-10-18T10:23:19.947Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://krzer.com/2015/12/17/regular-expression-example/</loc>
+    
+    <lastmod>2015-12-17T12:44:46.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://krzer.com/2015/12/10/Python-_data-structure(2)/</loc>
+    
+    <lastmod>2015-12-17T12:22:30.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://krzer.com/2015/12/08/Python-_data-structure(1)/</loc>
+    
+    <lastmod>2015-12-10T14:46:06.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://krzer.com/2015/11/22/Welcome-To-Krzer/</loc>
+    
+    <lastmod>2015-12-08T07:50:22.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://krzer.com/2015/11/29/Python3-spider-start/</loc>
+    
+    <lastmod>2015-12-08T07:49:58.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://krzer.com/2015/12/03/Python3-spider-_practice/</loc>
+    
+    <lastmod>2015-12-08T07:49:26.000Z</lastmod>
+    
+  </url>
+  
 </urlset>

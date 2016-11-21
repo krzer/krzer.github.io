@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Krzer&#39;s Blog</title>
+  <subtitle>Talk Is Cheap, Show Me The Code</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://krzer.com/"/>
+  <updated>2016-11-21T14:51:11.785Z</updated>
+  <id>http://krzer.com/</id>
+  
+  <author>
+    <name>krzer</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>关于CNAME和MX冲突的一些事</title>
+    <link href="http://krzer.com/2016/11/21/Something-about-cname-and-mx-conflicts/"/>
+    <id>http://krzer.com/2016/11/21/Something-about-cname-and-mx-conflicts/</id>
+    <published>2016-11-20T19:13:47.000Z</published>
+    <updated>2016-11-21T14:51:11.785Z</updated>
+    
+    <content type="html"><![CDATA[<p>前不久为了提升自己的逼格，设置了一个域名邮箱，之前用着还蛮好的，收件发件速度都不错，也没有出现丢件的情况。不过，最近查看我的域名邮箱时，发现最近一段时间内一封邮件也没有收到，真是奇怪呢，即使没什么订阅服务，起码也有广告吧，我不敢相信腾讯能把邮箱过滤系统做得如此好。<a id="more"></a></p>
+<p>所以我马上用QQ邮箱给自己的域名邮箱发了个文件，发现是可以收到的，都是自家服务，能收到也不能说明什么问题吧。我又用126、163、阿里邮箱一一测试了一下，发现果然是收不到邮件，直接提示我<strong>“对方服务器未响应,重新投递中”</strong>，之后就是<strong>“发送不成功，详细原因请查看退信”</strong>，真是坑爹啊!我不甘心，又用outlook、gmail发了一下，发现可以收到邮件，我勒个CACA……什么鬼？我第一反应就是国内的服务果然是不行，辣鸡一个，第二反应是看来腾讯是不打算维护这个服务了吧，毕竟免费，免费没好货……</p>
+<p>直到我查看了QQ邮箱的帮助中心，发现了这么一段话，<strong>“有些域名提供商的的域名设置中，如果之前存在纯域名的CNAME记录，则可能会导致MX记录无法生效。”</strong>才慢慢意识到可能是我DNS设置的问题，腾讯表示很受伤害，无故躺枪(o´・ェ・｀o)，正巧最近上的网络操作系统也正在配置DNS服务，所以让我们来一起看看这其中的问题到底出在哪里吧。</p>
+<h1 id="确认问题所在"><a href="#确认问题所在" class="headerlink" title="确认问题所在"></a>确认问题所在</h1><p>经过查询资料，发现，果然是DNS的锅，腾讯表示不背这个锅，哈哈。我的域名下有个裸域CNAME，如下所示，在此的基础上，又有个裸域MX，MDZZ~。在传统的DNS服务商的设置下，CNAME和MX配置不在同一个节点下，会使域名配置系统出现记录互斥现象，就像我现在所遇到的这样，但是我这个只是其中一种而已，更多的问题有待大家发现，哈哈~以下我们来具体剖析一下。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">CNAME   @   -    pages<span class="selector-class">.coding</span><span class="selector-class">.me</span>.</div><div class="line">MX      @   <span class="number">10</span>   mxdomain<span class="selector-class">.qq</span><span class="selector-class">.com</span>.</div></pre></td></tr></table></figure>
+<h1 id="技术剖析"><a href="#技术剖析" class="headerlink" title="技术剖析"></a>技术剖析</h1><p>进行到现在，明眼人一看就知道这应该是早期设计上留下的问题了吧，所以我们去RFC（Request For Comments（RFC），是一系列以编号排定的文件。基本的互联网通信协议都有在RFC文件内详细说明。）看看。果然不出我所料，找到这么一个文件。</p>
+<p>RFC 1034（<a href="http://tools.ietf.org/pdf/rfc1034）章节3.6.2中指出：" target="_blank" rel="external">http://tools.ietf.org/pdf/rfc1034）章节3.6.2中指出：</a></p>
+<blockquote>
+<p>If a CNAME RR is present at a node, no other data should be present; this ensures that the data for a canonical name and its aliases cannot be different.</p>
+</blockquote>
+<p>大概的意思是：如果CNAME记录指向了一个域名节点，为了确保不会出现不同的解析结果，那么这个域名节点将不在接受其他的记录值了。</p>
+<p>在Windows上cmd通过nslookup查询mx，得到结果如下：<br><img src="http://7xolkd.com1.z0.glb.clouddn.com/2016112101.jpg" alt="nslookup查询MX"><br>在Linux上通过dig查询mx，得到结果如下：<br><img src="http://7xolkd.com1.z0.glb.clouddn.com/2016112102.jpg" alt="dig查询mx"></p>
+<p>果然没错，竟然出现的是CNAME记录中指向的域名节点的MX记录解析，更尴尬的是pages.coding.me又CNAME记录指向了pages.coding.net，coding.net的MX记录指向的是webmaster.ffdns.net，看得我尴尬症都犯了……</p>
+<p>从上面我们可以得知我们设置的MX记录并没有生效，取而代之的反而是我们设置的CNAME记录指向的域名节点设置的MX记录。所以可以想象到我的域名邮箱的邮件实际上请求的地址是webmaster.ffdns.net，而不是我的域名邮箱所在的mxdomain.qq.com，因此我的邮箱就收不到邮件了，那么又有一个问题来了，为什么国外的outlook、gmail发的邮件我能够收到呢？为什么他们能找到我的邮箱地址，好奇怪啊！额，这个我现在还没找到原因，在这里先标记一下吧，待日后找到答案，再来开篇文章详谈。</p>
+<p>总结一下，递归DNS服务器在查询某个常规的域名记录（非CNAME记录）时，如果在服务器本地cache中找到该域名有对应的CNAME记录，则会优先使用该别名记录来重新启用查询。上面的nslookup和dig都向我们显示了这种情况的存在。</p>
+<p>因此，即使某些域名解析系统上面并没有限制用户同时填写CNAME记录和MX记录，但只要将CNAME记录和MX记录配置到一起，上述问题也一定是存在的，它会导致邮件服务偶尔出现异常。</p>
+<p>实际上除了CNAME和MX不能共存外，已经注册了CNAME类型的域名记录是不能再注册除DNSSEC相关类型记录（RRSIG、NSEC等）之外的任何其他类型记录（包括MX、A、NS等记录）。原因同理可得，哈哈。</p>
+<p>这大概也就是为什么一般我们的网站都是以www开头的域名访问，而不直接使用裸域作A记录、CNAME记录访问。但是绝大多数网站都能使用裸域访问，我们比较常规的做法都是设置301或是302跳转来解决这个问题的。</p>
+<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><ol>
+<li>不要同时在裸域下使用CNAME记录和MX记录（哈哈，说了跟没说一样）</li>
+<li>让CNAME记录下的域名节点使用的MX记录指向和你裸域MX指向同一个域名节点（这个是可行的，毕竟国内比较好的邮件服务商屈指可数，就那么几家）</li>
+<li>让裸域CNAME记录到自己的www域名节点上，然后让www域名节点CNAME记录到pages.coding.me域名节点上，最好让MX记录指向mxdomain.qq.com域名节点（即你的域名邮箱服务商的地址）。这种做法类似于第4中的方案，我用的是DNSPod提供的服务，不知道是DNSPod家的特性，还是其他家也存在相同的效果，这个后面有时间的话再进行检验。</li>
+</ol>
+<p>所以我就果断将自己的DNS解析改为如下：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">CNAME   @   -    www<span class="selector-class">.krzer</span><span class="selector-class">.com</span>.</div><div class="line">CNAME   www -    pages<span class="selector-class">.coding</span><span class="selector-class">.me</span>.</div><div class="line">MX      @   <span class="number">10</span>   mxdomain<span class="selector-class">.qq</span><span class="selector-class">.com</span>.</div></pre></td></tr></table></figure></p>
+<p>然后我们来测试一下：<br>同样的，在Windows上cmd通过nslookup查询mx，得到结果如下：<br><img src="http://7xolkd.com1.z0.glb.clouddn.com/2016112103.jpg" alt="nslookup查询MX"><br>同样的，在Linux上通过dig查询mx，得到结果如下：<br><img src="http://7xolkd.com1.z0.glb.clouddn.com/2016112104.jpg" alt="dig查询MX"></p>
+<p>完美，查询的结果都符合预期，再试试用126、163、阿里邮箱发一下邮件看看，（咚咚咚，你的快递到了~，额，不小心又开始自己胡思乱想了@_@），邮件秒收，完美~（可是心里总是感觉慌慌的，总觉得哪里不太对劲，<strong>时间是检验真理的唯一标准</strong>，这个得看看今后的表现怎么样了，就先这样吧~）</p>
+<ol>
+<li>此外网上还提供了一种方法，有些DNS域名解析系统（例如CloudXNS）具备隐式CNAME扩展记录类型（即LINK记录），它可以隐藏当前这一层的配置，直接接管下一层的结果。因此，CloudXNS也可以获得<strong>“将MX和CNAME共同配置”</strong>类似的解决方案。</li>
+</ol>
+<p>如下图所示（此图来源于网上），在www下配置CNAME到CDN服务提供商，然后在@下配置MX和LINK记录，将www作为被LINK的域名。</p>
+<p><img src="http://7xolkd.com1.z0.glb.clouddn.com/2016112105.jpg" alt="CloudXNS解决方案"></p>
+<p>OK，就先写到这里吧，这些就目前来看，都是不完美的解决方案，可能偶尔会存在邮件服务失效的问题吧，但是目前我也拿不出证据说丢件什么的，在我的测试下，现在都表现得很完美呢！第一次写博客写到深夜，竟然一点都不觉得困，感觉慢慢喜欢上了写文章，喜欢这种思想到文字之间，慢慢沉淀的感觉，或许我以后可能会成为一个写点杂文的作家呢，哈哈！（再一次陷入深深的意淫中，无法自拔……）好了，该睡觉了，别吹牛了，晚安，美好的世界！</p>
+<p>文章出自：<a href="http://www.krzer.com" target="_blank" rel="external">Krzer</a> <a href="http://www.krzer.com" target="_blank" rel="external">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;前不久为了提升自己的逼格，设置了一个域名邮箱，之前用着还蛮好的，收件发件速度都不错，也没有出现丢件的情况。不过，最近查看我的域名邮箱时，发现最近一段时间内一封邮件也没有收到，真是奇怪呢，即使没什么订阅服务，起码也有广告吧，我不敢相信腾讯能把邮箱过滤系统做得如此好。
+    
+    </summary>
+    
+      <category term="互联网协议" scheme="http://krzer.com/categories/%E4%BA%92%E8%81%94%E7%BD%91%E5%8D%8F%E8%AE%AE/"/>
+    
+    
+      <category term="CNAME" scheme="http://krzer.com/tags/CNAME/"/>
+    
+      <category term="MX" scheme="http://krzer.com/tags/MX/"/>
+    
+      <category term="DNS" scheme="http://krzer.com/tags/DNS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>追随兴趣</title>
+    <link href="http://krzer.com/2016/11/11/Follow-the-interest/"/>
+    <id>http://krzer.com/2016/11/11/Follow-the-interest/</id>
+    <published>2016-11-11T06:26:37.000Z</published>
+    <updated>2016-11-13T06:48:48.628Z</updated>
+    
+    <content type="html"><![CDATA[<p>今天是双十一，我失眠了，不是因为守着某猫某东急着剁手，在这点上我还是比较理智的，而是因为在思考着人生（真的是思考人生@_@~~），思考着未来的道路究竟该往哪里走？算起来，跟着老师做项目也已经有大半年了，这期间不能说有多大的作为，但是帮助还是有的，也学习了挺多在平时根本学不到的东西。<a id="more"></a></p>
+<p>心里一直很矛盾的是，手头上搞科研的方向不是自己喜欢的方向，而且基本没打算继续读研下去，短短的本科期间也无法将它比较完美的实现起来，这样一来工作下去的动力就变得微乎其微，长久下来根本无法驱动我前行。碍于师生情面，坚持了很久，直到最近，感觉越来越艰难了，自己能用来做自己喜欢的时间变得越来越少了，思索再三，这才鼓起了勇气，在这个特别的日子跟老师敞开心扉。老师对我也是挺支持的，秉着开放自由的精神同意了我的想法，在这里我想对老师由衷的说声“谢谢”。</p>
+<p>古语云：<strong>两优相权取其重，两害相权取其轻</strong>。这在经济学上也是有比较优势理论的。我一直觉得在当前这个纷扰错综的信息大爆炸时代里，人应该认清自己，摸清前行的道路，对未来的方向有个大致的感知。在这个物欲横流的社会里，我们常常会迷失在茫茫人海里，过着人云亦云的生活。我也常对身边的同学，朋友说过<strong>人做事不能那么功利，不要什么事情都想着有什么用，有什么帮助</strong>。其实很多时候做很多事情单单只是为了自己的兴趣，为了记录自己的心路历程，为了结交志同道合的好友等等。这不正是孔夫子说的<strong>“放於利而行，多怨”</strong>么？我一直都认为<strong>“兴趣是最好的老师”</strong>，只有在兴趣的驱使下，我们学东西才能即快速又牢固，否则遇到一些较难的知识，那真是味如嚼蜡。</p>
+<p>我不知道我做的是对还是错的，但我明白我喜欢的是什么，我将来想干什么，这样就足够了，起码对自己有个交代。既然已经做了决定，就需要全力前行吧，未来在哪里？你问我，我也不知道，未来在脚下吧（脑海浮现起西游记片尾曲，真的太经典了，哈哈~）。不管怎么说，且行且珍惜吧。<strong>follow my heart，everything will not regret it</strong>！</p>
+<p>以上纯属个人愚见，更多的是记录自己的想法，仅供参考！</p>
+<p>文章出自：<a href="http://www.krzer.com" target="_blank" rel="external">Krzer</a> <a href="http://www.krzer.com" target="_blank" rel="external">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;今天是双十一，我失眠了，不是因为守着某猫某东急着剁手，在这点上我还是比较理智的，而是因为在思考着人生（真的是思考人生@_@~~），思考着未来的道路究竟该往哪里走？算起来，跟着老师做项目也已经有大半年了，这期间不能说有多大的作为，但是帮助还是有的，也学习了挺多在平时根本学不到的东西。
+    
+    </summary>
+    
+      <category term="生活随笔" scheme="http://krzer.com/categories/%E7%94%9F%E6%B4%BB%E9%9A%8F%E7%AC%94/"/>
+    
+    
+      <category term="感想" scheme="http://krzer.com/tags/%E6%84%9F%E6%83%B3/"/>
+    
+      <category term="观点" scheme="http://krzer.com/tags/%E8%A7%82%E7%82%B9/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>计算机启动分析</title>
+    <link href="http://krzer.com/2016/10/27/Computer-Startup-Analysis/"/>
+    <id>http://krzer.com/2016/10/27/Computer-Startup-Analysis/</id>
+    <published>2016-10-27T05:57:04.000Z</published>
+    <updated>2016-10-27T06:09:06.334Z</updated>
+    
+    <content type="html"><![CDATA[<p>我小的时候一直有个疑问，电脑是怎么启动的，当我们按下电源键的时候，电脑内部是怎么运行的，总不能是电源键和操作系统捆绑在一起，形成一个事件吧@_@。这个问题一直在困扰着我，我一直都不知道这其中到底是怎么一回事，这几天碰巧看到一些关于MBR（即主引导记录）的文章，脑袋里大概有了那么点概念了，想想好像是那么一回事。这几天，经过查阅相关资料，在这里整理一下我梳理的笔记。<br><a id="more"></a></p>
+<p>买来的零件，组装起来成为一部台式计算机，此时就像是一副空空的躯体一样，他是没有灵魂的，不过好在他还带有一张铭牌，记录着他身上每个部位的信息。这个铭牌就是我们所说的CMOS芯片，这块在主板上小小的芯片是主板上的一块可读写的并行或串行FLASH芯片，是用来保存BIOS的硬件配置和用户对某些参数的设定的。CMOS本质上他其实是一块可读写的<strong>RAM芯片</strong>，需要配合主板上的CMOS电池一起工作，这也就是为什么我们的计算机关机后，下次开机时时间依然是正确的原因了。所以我们的计算机上的一些基本启动信息（如日期、时间、启动设置）如果错误的话，多半是CMOS或是CMOS电池的问题了。当然，绝大多数的用户通常不会关心CMOS的硬件问题，而只关心写在CMOS上的信息，也就是BIOS的设置问题，其中提到最多的就是系统故障时拿掉主板上的电池，进行CMOS放电操作，从而还原BIOS设置。</p>
+<p>BIOS是英文”Basic Input Output System”的缩略词，直译过来后中文名称就是”基本输入输出系统”。其实，它是一组固化到计算机内主板上一个ROM芯片上的程序，它保存着计算机最重要的基本输入输出的程序、开机后自检程序和系统自启动程序，它可从CMOS中读写系统设置的具体信息。装过系统的人都知道，我们在设置启动盘启动的时候，进入的那个界面（一般为蓝色）就是我们这里所说的BIOS。不同的BIOS系统进入的方式不一样，一般为Delete键。</p>
+<p>好了，下面我们进入正题，计算机的整个启动过程可以分为四个阶段。</p>
+<h1 id="第一阶段：BIOS"><a href="#第一阶段：BIOS" class="headerlink" title="第一阶段：BIOS"></a>第一阶段：BIOS</h1><p>当我们按下电源键时，主板即被唤醒，读取主板上的固件BIOS，BIOS开始运行。</p>
+<h2 id="BIOS进行POST"><a href="#BIOS进行POST" class="headerlink" title="BIOS进行POST"></a>BIOS进行POST</h2><p>BIOS启动时首先要做的事情就是进行POST（Power-OnSelfTest，加电自检），POST的主要任务就是检测系统中一些关键的硬件设备是否能够正常工作。如果硬件出现问题，主板便会发出不同的“蜂鸣”声来告诉我们硬件出现问题，启动终止。如果没有问题，计算机则会显示BIOS的启动画面，包括硬件信息（例如CPU、内存、硬盘等）和BIOS的类型、序列号和版本号等。在正常的情况下，POST过程进行的非常的快，我们几乎无法察觉到它的存在。</p>
+<h2 id="启动顺序"><a href="#启动顺序" class="headerlink" title="启动顺序"></a>启动顺序</h2><p>当完成BIOS的POST过程时，BIOS将执行最后一项任务：按照用户在BIOS界面指定的启动顺序（Boot Sequence）进行启动（一般默认为主机硬盘，如果是安装系统的话，也可以是光驱和一些USB存储设备）。</p>
+<p>其实BIOS在这里做的任务主要就是根据用户设定的启动顺序，将计算机的控制权转交给启动顺序指定存储设备中的启动程序。也就是BIOS只需要知道，“下一阶段的启动程序”存放在哪一个存储设备中即可，寻找的途径就是按照启动顺序依次进行，找不到则跳到下一存储设备。</p>
+<h1 id="第二阶段：MBR"><a href="#第二阶段：MBR" class="headerlink" title="第二阶段：MBR"></a>第二阶段：MBR</h1><p>MBR，在上面也说了，就是主引导记录。排在启动顺序第一位的存储设备在拿到BIOS转交的系统控制权后，这时，计算机就会读取设备的第一个扇区，也就是读取最前面的512字节（因为目前的磁盘的每个扇区就是512字节）。如果这512个字节的最后两个字节是0x55和0xAA，表明这个设备可以用于启动；如果不是，表明设备不能用于启动，控制权于是被转交给启动顺序中的下一个设备。</p>
+<h2 id="MBR的结构"><a href="#MBR的结构" class="headerlink" title="MBR的结构"></a>MBR的结构</h2><p>MBR只有512个字节，放不了太多东西。它的主要作用是告诉计算机到硬盘的哪一个位置去找操作系统。</p>
+<p>主引导记录由三个部分组成：</p>
+<blockquote>
+<ol>
+<li>第一部分（第1-446字节）：调用操作系统的主引导程序（boot loader）。</li>
+<li>第二部分(第447-510字节)：分区表（Partition table区），即DPT，占64个字节，硬盘中分区有多少以及每一分区的大小都记在其中。</li>
+<li>第三部分（第511-512字节）：主引导记录签名（magic number），占2个字节，（0x55和0xAA）。</li>
+</ol>
+</blockquote>
+<h2 id="分区表"><a href="#分区表" class="headerlink" title="分区表"></a>分区表</h2><p>分区表的作用就是将硬盘分成若干个区。安装个操作系统的人都知道，在装之前一般都要进行分区，当然你只使用一个分区并不会出现什么问题，只是会给使用上带来一些不方便罢了。</p>
+<p>硬盘分区有利于我们对硬盘的管理，而且分区有一个很重要的优点是，我们在每个区都可以安装不同的操作系统，这对于我们喜欢折腾的人来说，可是省了一大笔花销呢。“生命不息，折腾不止”，正是由于每个区都可以安装不同的操作系统，所以我们的MBR必须知道要将计算机的控制权交给哪个系统（这个将在下面详细讲）。</p>
+<p>分区表的长度只有64个字节，在其中每个分区又占用16个字节，所以分区表只能记录4个分区的信息，这样的一级分区我们把它叫做主分区。这就是硬盘的主分区数目不能超过4个的原因。</p>
+<p>每个主分区的16个字节，由6个部分组成：</p>
+<blockquote>
+<p>　　（1） 第1个字节：如果为0x80，就表示该主分区是激活分区，控制权要转交给这个分区。四个主分区里面只能有一个是激活的。<br>　　（2） 第2-4个字节：主分区第一个扇区的物理位置（柱面、磁头、扇区号等等）。<br>　　（3） 第5个字节：主分区类型。<br>　　（4） 第6-8个字节：主分区最后一个扇区的物理位置。<br>　　（5） 第9-12字节：该主分区第一个扇区的逻辑地址。<br>　　（6） 第13-16字节：主分区的扇区总数。　</p>
+</blockquote>
+<p>最后的四个字节（”主分区的扇区总数”），决定了这个主分区的长度。也就是说，一个主分区的扇区总数最多不超过2的32次方。<br>如果每个扇区为512个字节，就意味着单个分区最大不超过2TB。再考虑到扇区的逻辑地址也是32位，所以单个硬盘可利用的空间最大也不超过2TB。如果想使用更大的硬盘，只有2个方法：一是提高每个扇区的字节数，二是增加扇区总数。</p>
+<h1 id="第三阶段：开机管理程序（boot-loader）"><a href="#第三阶段：开机管理程序（boot-loader）" class="headerlink" title="第三阶段：开机管理程序（boot loader）"></a>第三阶段：开机管理程序（boot loader）</h1><p>这时，计算机的控制权就要转交给MBR中的开机管理程序了。开机管理程序（boot loader）是一个可以读取操作系统核心文件的程序。所以说这个开机管理程序的目的是在载入（load）核心文件，由于开机管理程序是操作系统在安装的时候所提供的，所以他会认识硬盘内的文件系统格式，因此就能够读取核心文件。</p>
+<p>由上面的说明我们会知道，BIOS与MBR都是硬件本身会支持的功能，至于boot loader则是操作系统安装在MBR上面的一套软件了。由于MBR仅有446 字节而已，因此这个开机管理程序是非常小而美的。 这个boot loader的主要任务有下面这些项目：</p>
+<ul>
+<li>提供菜单：使用者可以选择不同的开机项目，这也是多重开机的重要功能！</li>
+<li>载入核心文件：直接指向可开机的程序区段来开始操作系统；</li>
+<li>转交其他loader：将开机管理功能转交给其他loader负责。</li>
+</ul>
+<h2 id="提供菜单"><a href="#提供菜单" class="headerlink" title="提供菜单"></a>提供菜单</h2><p>提供菜单就是在开机要进入系统之前，出现一个系统选择界面，由用户选择启动哪一个操作系统，想必装过双系统的人应该都知道吧。</p>
+<p>在windows平台下，我们最常用的系统引导软件就是EasyBCD了，每次装完双系统，莫名其妙进不去的时候，就用它来修复一下，分分钟解决问题。</p>
+<p>Linux环境中，目前最流行的启动管理器是Grub。</p>
+<h2 id="载入核心文件"><a href="#载入核心文件" class="headerlink" title="载入核心文件"></a>载入核心文件</h2><p>载入核心文件就是boot loader会自动识别自己的系统盘内的可开机核心文件，并运行它，将计算机的控制权转交给它。</p>
+<h2 id="转交其他loader"><a href="#转交其他loader" class="headerlink" title="转交其他loader"></a>转交其他loader</h2><p>这一点很有趣呢！这表示你的计算机系统里面可能具有两个以上的开机管理程序呢！什么？你说什么？Are you kidding me？我们的硬盘不是只有一个MBR而已？是的没错，不过开机管理程序除了可以安装在MBR之外， 还可以安装在每个分区的引导扇区（boot sector）。没错，这个特色才能造就“多重开机”的功能啊！</p>
+<h1 id="第四阶段：操作系统"><a href="#第四阶段：操作系统" class="headerlink" title="第四阶段：操作系统"></a>第四阶段：操作系统</h1><p>boot loader将控制权转交给操作系统后，操作系统的内核首先被载入内存。</p>
+<p>以Linux系统为例，先载入/boot目录下面的kernel。内核加载成功后，第一个运行的程序是/sbin/init。它根据配置文件（Debian系统是/etc/initab）产生init进程。这是Linux启动后的第一个进程，pid进程编号为1，其他进程都是它的后代。</p>
+<p>然后，init线程加载系统的各个模块，比如窗口程序和网络程序，直至执行/bin/login程序，跳出登录界面，等待用户输入用户名和密码。</p>
+<p>至此，全部启动过程完成。</p>
+<p><strong>P.s.以下内容有时间的时候我会再深入研究，并总结出来</strong></p>
+<p>1.我们的系统只有四个主分区，那为什么有的计算机能够分不止四个区呢？</p>
+<blockquote>
+<p>随着硬盘越来越大，四个主分区已经不够了，需要更多的分区。但是，分区表只有四项，因此规定有且仅有一个区可以被定义成”扩展分区”（Extended partition）。</p>
+<p>所谓”扩展分区”，就是指这个区里面又分成多个区。这种分区里面的分区，就叫做”逻辑分区”（logical partition）。</p>
+<p>计算机先读取扩展分区的第一个扇区，叫做”扩展引导记录”（Extended boot record，缩写为EBR）。它里面也包含一张64字节的分区表，但是最多只有两项（也就是两个逻辑分区）。</p>
+<p>计算机接着读取第二个逻辑分区的第一个扇区，再从里面的分区表中找到第三个逻辑分区的位置，以此类推，直到某个逻辑分区的分区表只包含它自身为止（即只有一个分区项）。因此，扩展分区可以包含无数个逻辑分区。</p>
+</blockquote>
+<p>2.MBR支持的最大分区为2TB，有没有其他方法可以让我们的系统支持更大的分区？</p>
+<blockquote>
+<p>答案是有，GPT可以满足你的要求！</p>
+<p>与支持最大卷为2 TB（Terabytes）并且每个磁盘最多有4个主分区（或3个主分区，1个扩展分区和无限制的逻辑驱动器）的MBR磁盘分区的样式相比，GPT磁盘分区样式支持最大卷为18 EB（Exabytes）并且每磁盘的分区数没有上限，只受到操作系统限制（由于分区表本身需要占用一定空间，最初规划硬盘分区时，留给分区表的空间决定了最多可以有多少个分区，IA-64版Windows限制最多有128个分区，这也是EFI标准规定的分区表的最小尺寸）。与MBR分区的磁盘不同，至关重要的平台操作数据位于分区，而不是位于非分区或隐藏扇区。另外，GPT分区磁盘有备份分区表来提高分区数据结构的完整性。</p>
+</blockquote>
+<p>3.UEFI和BIOS的区别？</p>
+<blockquote>
+<p>暂时不太清楚，以后再慢慢深入@_@~</p>
+</blockquote>
+<p>文章出自：<a href="http://krzer.com/">Krzer</a> <a href="http://krzer.com/">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;我小的时候一直有个疑问，电脑是怎么启动的，当我们按下电源键的时候，电脑内部是怎么运行的，总不能是电源键和操作系统捆绑在一起，形成一个事件吧@_@。这个问题一直在困扰着我，我一直都不知道这其中到底是怎么一回事，这几天碰巧看到一些关于MBR（即主引导记录）的文章，脑袋里大概有了那么点概念了，想想好像是那么一回事。这几天，经过查阅相关资料，在这里整理一下我梳理的笔记。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="理解计算机" scheme="http://krzer.com/categories/%E7%90%86%E8%A7%A3%E8%AE%A1%E7%AE%97%E6%9C%BA/"/>
+    
+    
+      <category term="系统" scheme="http://krzer.com/tags/%E7%B3%BB%E7%BB%9F/"/>
+    
+      <category term="计算机" scheme="http://krzer.com/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Python环境下OpenCV的安装</title>
+    <link href="http://krzer.com/2016/10/18/windows-python-opencv/"/>
+    <id>http://krzer.com/2016/10/18/windows-python-opencv/</id>
+    <published>2016-10-18T09:16:12.000Z</published>
+    <updated>2016-10-18T10:23:19.947Z</updated>
+    
+    <content type="html"><![CDATA[<p>前不久发现域名块到期又得续费了，才惊醒我的博客竟然荒废了将近一年了，故前去续费并打算重启博客，记录一下最近的学习和进展。因为要在寝室和实验室两头跑，一些在配置上遇到的问题没有记录的话，重复查找解决就要耗费我大量的时间，确实划不来，还不如写写博客记录一下，方便自己也方便大家，这就是所说的前人种树后人乘凉吧。博客存在的意义不也是不让自己在同一个问题上犯两次问题么？<a id="more"></a></p>
+<p>最近在学习图像识别的相关知识，说到图像识别就必须提到OpenCV这个开源的计算机视觉库了。OpenCV于1999年由Intel建立，如今由Willow Garage提供支持。OpenCV是一个基于BSD许可（开源）发行的跨平台计算机视觉库，可以运行在Linux、Windows和Mac OS操作系统上。它轻量级而且高效——由一系列 C 函数和少量 C++ 类构成，同时提供了Python、Ruby、MATLAB等语言的接口，实现了图像处理和计算机视觉方面的很多通用算法。</p>
+<p>前面也说了OpenCV支持多种语言接口，要说最合适的当选C++不让，但是偏偏我选的是Python，为什么呢？考虑到<strong>OpenCV+C++</strong>中C++我比较不擅长用，而且C++开发的进度要慢些（起码代码量也多点嘛==），而<strong>OpenCV+Python</strong>中Python接口虽然不如C++齐全和强大，但它则是我比较喜欢而且擅长的，相对于前者开发也快点， 两害相权取其轻，我选择后者。</p>
+<h1 id="系统与软件环境"><a href="#系统与软件环境" class="headerlink" title="系统与软件环境"></a>系统与软件环境</h1><ul>
+<li>Microsoft Windows8.1 专业版 6.3.9600</li>
+<li>Python 2.7.11</li>
+<li>OpenCV 2.4.13</li>
+<li>NumPy 1.11.2</li>
+<li>Matplotlib 1.5.3</li>
+</ul>
+<hr>
+<p>Python这里选用的是2.7版本，虽然OpenCV3.0版本里支持了Python3接口，但是由于是入门还是选择稳定版本的OpenCV2，所以理所当然选择Python2。</p>
+<p>相对于C++是可以直接调用OpenCV的，Python在使用的时候必须配合NumPy一起使用，这是由于在使用中最大值投影涉及到了对单个像素点的操作，因此必须使用到Python中常用的矩阵处理工具包，也就是NumPy。</p>
+<p>在这里我还使用了Matplotlib，Matplotlib是python的一个绘图库，里头有各种各样的绘图方法。</p>
+<h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><h2 id="Python环境搭建"><a href="#Python环境搭建" class="headerlink" title="Python环境搭建"></a>Python环境搭建</h2><p>1.前往<a href="https://www.python.org/" target="_blank" rel="external">Python官网</a>下载Python2.7，安装就没什么可说的，一路<strong>next</strong>就行了。安装时选择加入环境变量。</p>
+<p>2.为了方便Python安装资源包，我们需要安装<strong>easy_install</strong>和<strong>pip</strong>，<strong>easy_install</strong>和<strong>pip</strong>都是用来下载安装Python一个公共资源库<strong>PyPI</strong>的相关资源包的。</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">首先安装easy_install</div><div class="line"></div><div class="line">下载地址<span class="symbol">:https</span><span class="symbol">://pypi</span>.python.org/pypi/ez_setup</div><div class="line"></div><div class="line">解压,安装.</div><div class="line"></div><div class="line">python ez_setup.py</div><div class="line"></div><div class="line">安装好easy_install 之后 再安装pip</div><div class="line"></div><div class="line">下载地址<span class="symbol">:https</span><span class="symbol">://pypi</span>.python.org/pypi/pip</div><div class="line"></div><div class="line">解压,安装.</div><div class="line"></div><div class="line">python setup.py install</div></pre></td></tr></table></figure>
+<p><strong>这里注意一下，要把<em>C:\Python27\Scripts;</em>加入环境变量中，防止后面用不了pip。</strong></p>
+<p>3.NumPy的安装我们就可以使用<strong>pip</strong>进项安装了，由于资源在国外，下载起来很慢并且导致失败，我们这里需要换源，这里强烈推荐清华大学的<a href="https://mirrors.tuna.tsinghua.edu.cn/" target="_blank" rel="external">tuna开源镜像站</a>。</p>
+<p>在命令行里输入：<br><code>pip install numpy -i https://pypi.tuna.tsinghua.edu.cn/simple</code></p>
+<p>分分钟装完。</p>
+<p>4.Matplotlib的安装同上</p>
+<p>在命令行里输入：<br><code>pip install matplotlib -i https://pypi.tuna.tsinghua.edu.cn/simple</code></p>
+<h2 id="OpenCV环境搭建"><a href="#OpenCV环境搭建" class="headerlink" title="OpenCV环境搭建"></a>OpenCV环境搭建</h2><p>1.前往<a href="http://opencv.org/" target="_blank" rel="external">OpenCV官网</a>下载OpenCV2.4.13，下载慢的自行科学上网。下载完毕打开文件，其实就是将文件解压出来。</p>
+<p>2前往<strong>opencv\opencv\build\python\2.7</strong>找到<strong>x64</strong>和<strong>x86</strong>文件夹，由于我的电脑是64位的，在这里选择x64文件夹，将<strong>cv2.pyd</strong>文件复制到Python2.7安装目录下的<strong>Python27\Lib\site-packages</strong>中。</p>
+<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line"><span class="keyword">import</span> cv2</div><div class="line"></div><div class="line">img = cv2.imread(<span class="string">'img.jpg'</span>,<span class="number">0</span>)</div><div class="line">cv2.imshow(<span class="string">'image'</span>,img)</div><div class="line">cv2.waitKey(<span class="number">0</span>)</div><div class="line">cv2.destroyAllWindows()</div></pre></td></tr></table></figure>
+<p><img src="http://7xolkd.com1.z0.glb.clouddn.com/161018.jpg" alt="image"></p>
+<p>文章出自：<a href="http://www.krzer.com" target="_blank" rel="external">Krzer</a> <a href="http://www.krzer.com" target="_blank" rel="external">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;前不久发现域名块到期又得续费了，才惊醒我的博客竟然荒废了将近一年了，故前去续费并打算重启博客，记录一下最近的学习和进展。因为要在寝室和实验室两头跑，一些在配置上遇到的问题没有记录的话，重复查找解决就要耗费我大量的时间，确实划不来，还不如写写博客记录一下，方便自己也方便大家，这就是所说的前人种树后人乘凉吧。博客存在的意义不也是不让自己在同一个问题上犯两次问题么？
+    
+    </summary>
+    
+      <category term="代码之路" scheme="http://krzer.com/categories/%E4%BB%A3%E7%A0%81%E4%B9%8B%E8%B7%AF/"/>
+    
+    
+      <category term="python" scheme="http://krzer.com/tags/python/"/>
+    
+      <category term="opencv" scheme="http://krzer.com/tags/opencv/"/>
+    
+      <category term="windows" scheme="http://krzer.com/tags/windows/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>正则表达式实例大全</title>
+    <link href="http://krzer.com/2015/12/17/regular-expression-example/"/>
+    <id>http://krzer.com/2015/12/17/regular-expression-example/</id>
+    <published>2015-12-17T12:21:00.000Z</published>
+    <updated>2015-12-17T12:44:46.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>上次在<a href="http://krzer.com/2015/11/29/Python3-spider-start/">Python爬虫入门</a>里提起过正则表达式，但是由于篇幅有限，并没有很详尽地介绍正则表达式更多的用法。我们知道正则表达式的用途极为广泛，可以在爬虫里的匹配字符，在遇到需要校验数据时，也可以使用我们的正则表达式来帮我们完成任务。但是我们在用的时候往往是在网上找他的用法，费时又费力，结果找来的还是不很符合要求。所以我最近把我们日常开发中常用的一些正则表达式整理总结了一下，包括校验数字、字符、一些特殊的需求等等。一来给自己留个底，二来方便大家需要的时候查阅，毕竟我们写博客的目的就是避免重复造轮子嘛。</p>
+<a id="more"></a>
+<h1 id="校验数字的表达式"><a href="#校验数字的表达式" class="headerlink" title="校验数字的表达式"></a>校验数字的表达式</h1><figure class="highlight markdown"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">数字： ^[0-9]*$</div><div class="line">n位的数字： ^\d&#123;n&#125;$</div><div class="line">至少n位的数字： ^\d&#123;n,&#125;$</div><div class="line">m-n位的数字： ^\d&#123;m,n&#125;$</div><div class="line">零和非零开头的数字： ^(0|[<span class="string">1-9</span>][<span class="symbol">0-9</span>]*)$</div><div class="line">非零开头的最多带两位小数的数字： ^([<span class="string">1-9</span>][<span class="symbol">0-9</span>]*)+(.[0-9]&#123;1,2&#125;)?$</div><div class="line">带1-2位小数的正数或负数： ^(\-)?\d+(\.\d&#123;1,2&#125;)?$</div><div class="line">有两位小数的正实数： ^[0-9]+(.[0-9]&#123;2&#125;)?$</div><div class="line">有1~3位小数的正实数： ^[0-9]+(.[0-9]&#123;1,3&#125;)?$</div><div class="line">正数、负数、和小数： ^(\-|\+)?\d+(\.\d+)?$</div><div class="line">非负整数： ^\d+$ 或 ^[1-9]\d*|0$</div><div class="line">非正整数： ^-[1-9]\d*|0$ 或 ^((-\d+)|(0+))$</div><div class="line">非零的正整数： ^[<span class="string">1-9</span>]\d<span class="emphasis">*$ 或 ^([1-9][0-9]*</span>)&#123;1,3&#125;$ 或 ^\+?[<span class="string">1-9</span>][<span class="symbol">0-9</span>]*$</div><div class="line">非零的负整数： ^\-[<span class="string">1-9</span>][<span class="symbol"></span>]0-9"<span class="emphasis">*$ 或 ^-[1-9]\d*</span>$</div><div class="line">非负浮点数： ^\d+(\.\d+)?$ 或 ^[1-9]\d<span class="emphasis">*\.\d*</span>|0\.\d<span class="emphasis">*[1-9]\d*</span>|0?\.0+|0$</div><div class="line">非正浮点数： ^((-\d+(\.\d+)?)|(0+(\.0+)?))$ 或 ^(-([1-9]\d<span class="emphasis">*\.\d*</span>|0\.\d<span class="emphasis">*[1-9]\d*</span>))|0?\.0+|0$</div><div class="line">正浮点数： ^[<span class="string">1-9</span>]\d<span class="emphasis">*\.\d*</span>|0\.\d<span class="emphasis">*[1-9]\d*</span>$ 或 ^(([<span class="string">0-9</span>]+\.[<span class="string">0-9</span>]<span class="emphasis">*[1-9][0-9]*</span>)|([<span class="string">0-9</span>]<span class="emphasis">*[1-9][0-9]*</span>\.[<span class="string">0-9</span>]+)|([<span class="string">0-9</span>]<span class="emphasis">*[1-9][0-9]*</span>))$</div><div class="line">负浮点数： ^-([<span class="string">1-9</span>]\d<span class="emphasis">*\.\d*</span>|0\.\d<span class="emphasis">*[1-9]\d*</span>)$ 或 ^(-(([<span class="string">0-9</span>]+\.[<span class="string">0-9</span>]<span class="emphasis">*[1-9][0-9]*</span>)|([<span class="string">0-9</span>]<span class="emphasis">*[1-9][0-9]*</span>\.[<span class="string">0-9</span>]+)|([<span class="string">0-9</span>]<span class="emphasis">*[1-9][0-9]*</span>)))$</div><div class="line">浮点数： ^(-?\d+)(\.\d+)?$ 或 ^-?([1-9]\d<span class="emphasis">*\.\d*</span>|0\.\d<span class="emphasis">*[1-9]\d*</span>|0?\.0+|0)$</div></pre></td></tr></table></figure>
+<h1 id="校验字符的表达式"><a href="#校验字符的表达式" class="headerlink" title="校验字符的表达式"></a>校验字符的表达式</h1><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">汉字： ^[\u4e00-\u9fa5]&#123;<span class="number">0</span>,&#125;$</div><div class="line">英文和数字： ^[A-Za-z0<span class="number">-9</span>]+$ 或 ^[A-Za-z0<span class="number">-9</span>]&#123;<span class="number">4</span>,<span class="number">40</span>&#125;$</div><div class="line">长度为<span class="number">3</span><span class="number">-20</span>的所有字符： ^.&#123;<span class="number">3</span>,<span class="number">20</span>&#125;$</div><div class="line">由<span class="number">26</span>个大写英文字母组成的字符串： ^[A-Z]+$</div><div class="line">由<span class="number">26</span>个小写英文字母组成的字符串： ^[a-z]+$</div><div class="line">由<span class="number">26</span>个英文字母组成的字符串： ^[A-Za-z]+$</div><div class="line">由数字和<span class="number">26</span>个英文字母组成的字符串： ^[A-Za-z0<span class="number">-9</span>]+$</div><div class="line">中文、英文、数字包括下划线： ^[\u4E00-\u9FA5A-Za-z0<span class="number">-9</span>_]+$</div><div class="line">由数字、<span class="number">26</span>个英文字母或者下划线组成的字符串： ^\w+$ 或 ^\w&#123;<span class="number">3</span>,<span class="number">20</span>&#125;$</div><div class="line">中文、英文、数字但不包括下划线等符号： ^[\u4E00-\u9FA5A-Za-z0<span class="number">-9</span>]+$ 或 ^[\u4E00-\u9FA5A-Za-z0<span class="number">-9</span>]&#123;<span class="number">2</span>,<span class="number">20</span>&#125;$</div><div class="line">可以输入含有^%&amp;’,;=?$\”等字符： [^%&amp;',;=?$\x22]+</div><div class="line">禁止输入含有~的字符： [^~\x22]+</div></pre></td></tr></table></figure>
+<h1 id="特殊需求表达式"><a href="#特殊需求表达式" class="headerlink" title="特殊需求表达式"></a>特殊需求表达式</h1><figure class="highlight markdown"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">Email地址： ^\w+([-+.]\w+)<span class="emphasis">*@\w+([-.]\w+)*</span>\.\w+([-.]\w+)*$</div><div class="line">域名： [<span class="string">a-zA-Z0-9</span>][<span class="symbol">-a-zA-Z0-9</span>]&#123;0,62&#125;(/.[<span class="string">a-zA-Z0-9</span>][<span class="symbol">-a-zA-Z0-9</span>]&#123;0,62&#125;)+/.?</div><div class="line">InternetURL： [a-zA-z]+://[^\s]<span class="bullet">* 或 ^http://([\w-]+\.)+[\w-]+(/[\w-./?%&amp;=]*</span>)?$</div><div class="line">手机号码： ^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d&#123;8&#125;$</div><div class="line">身份证号(15位、18位数字)： ^\d&#123;15&#125;|\d&#123;18&#125;$</div><div class="line">短身份证号码(数字、字母x结尾)： ^([0-9])&#123;7,18&#125;(x|X)?$ 或 ^\d&#123;8,18&#125;|[0-9x]&#123;8,18&#125;|[0-9X]&#123;8,18&#125;?$</div><div class="line">电话号码(“XXX-XXXXXXX”、”XXXX-XXXXXXXX”、”XXX-XXXXXXX”、”XXX-XXXXXXXX”、”XXXXXXX”和”XXXXXXXX)： ^($$\d&#123;3,4&#125;-)|\d&#123;3.4&#125;-)?\d&#123;7,8&#125;$</div><div class="line">国内电话号码(0511-4405222、021-87888822)： \d&#123;3&#125;-\d&#123;8&#125;|\d&#123;4&#125;-\d&#123;7&#125;</div><div class="line">帐号是否合法(字母开头，允许5-16字节，允许字母数字下划线)： ^[<span class="string">a-zA-Z</span>][<span class="symbol">a-zA-Z0-9_</span>]&#123;4,15&#125;$</div><div class="line">密码(以字母开头，长度在6~18之间，只能包含字母、数字和下划线)： ^[a-zA-Z]\w&#123;5,17&#125;$</div><div class="line">强密码(必须包含大小写字母和数字的组合，不能使用特殊字符，长度在8-10之间)： ^(?=.<span class="emphasis">*\d)(?=.*</span>[a-z])(?=.*[A-Z]).&#123;8,10&#125;$</div><div class="line">日期格式： ^\d&#123;4&#125;-\d&#123;1,2&#125;-\d&#123;1,2&#125;</div><div class="line">一年的12个月(01～09和1～12)： ^(0?[1-9]|1[0-2])$</div><div class="line">一个月的31天(01～09和1～31)： ^((0?[1-9])|((1|2)[0-9])|30|31)$</div><div class="line">xml文件： ^([<span class="string">a-zA-Z</span>]+-?)+[<span class="string">a-zA-Z0-9</span>]+\\.[<span class="string">x|X</span>][<span class="symbol">m|M</span>][<span class="string">l|L</span>]$</div><div class="line">中文字符的正则表达式： [\u4e00-\u9fa5]</div><div class="line">双字节字符： [^\x00-\xff] (包括汉字在内，可以用来计算字符串的长度(一个双字节字符长度计2，ASCII字符计1))</div><div class="line">空白行的正则表达式： \n\s*\r (可以用来删除空白行)</div><div class="line">HTML标记的正则表达式： <span class="xml"><span class="tag">&lt;<span class="name">(\S*?)[^</span>&gt;</span></span>]<span class="emphasis">*&gt;.*</span>?<span class="xml"><span class="tag">&lt;/<span class="name">\1</span>&gt;</span></span>|<span class="xml"><span class="tag">&lt;<span class="name">.*?</span> /&gt;</span></span> (网上流传的版本太糟糕，上面这个也仅仅能部分，对于复杂的嵌套标记依旧无能为力)</div><div class="line">首尾空白字符的正则表达式： ^\s<span class="emphasis">*|\s*</span>$或(^\s<span class="emphasis">*)|(\s*</span>$) (可以用来删除行首行尾的空白字符(包括空格、制表符、换页符等等)，非常有用的表达式)</div><div class="line">腾讯QQ号： [<span class="string">1-9</span>][<span class="symbol">0-9</span>]&#123;4,&#125; (腾讯QQ号从10000开始)</div><div class="line">中国邮政编码： [1-9]\d&#123;5&#125;(?!\d) (中国邮政编码为6位数字)</div><div class="line">IP地址： \d+\.\d+\.\d+\.\d+ (提取IP地址时有用)</div><div class="line">IP地址： ((?:(?:25[0-5]|2[0-4]\\d|[01]?\\d?\\d)\\.)&#123;3&#125;(?:25[0-5]|2[0-4]\\d|[01]?\\d?\\d)) </div><div class="line">钱的输入格式：</div><div class="line"><span class="code">     ● 有四种钱的表示形式我们可以接受:”10000.00″ 和 “10,000.00″, 和没有 “分” 的 “10000″ 和 “10,000″：^[1-9][0-9]*$</span></div><div class="line"><span class="code">     ● 这表示任意一个不以0开头的数字，但是，这也意味着一个字符”0″不通过，所以我们采用下面的形式：^(0|[1-9][0-9]*)$</span></div><div class="line"><span class="code">     ● 一个0或者一个不以0开头的数字.我们还可以允许开头有一个负号：^(0|-?[1-9][0-9]*)$</span></div><div class="line"><span class="code">     ● 这表示一个0或者一个可能为负的开头不为0的数字.让用户以0开头好了.把负号的也去掉，因为钱总不能是负的吧.下面我们要加的是说明可能的小数部分：^[0-9]+(.[0-9]+)?$</span></div><div class="line"><span class="code">     ● 必须说明的是，小数点后面至少应该有1位数，所以”10.”是不通过的，但是 “10″ 和 “10.2″ 是通过的：^[0-9]+(.[0-9]&#123;2&#125;)?$</span></div><div class="line"><span class="code">     ● 这样我们规定小数点后面必须有两位，如果你认为太苛刻了，可以这样：^[0-9]+(.[0-9]&#123;1,2&#125;)?$</span></div><div class="line"><span class="code">     ● 这样就允许用户只写一位小数。下面我们该考虑数字中的逗号了，我们可以这样：^[0-9]&#123;1,3&#125;(,[0-9]&#123;3&#125;)*(.[0-9]&#123;1,2&#125;)?$</span></div><div class="line"><span class="code">     ● 1到3个数字，后面跟着任意个 逗号+3个数字，逗号成为可选，而不是必须：^([0-9]+|[0-9]&#123;1,3&#125;(,[0-9]&#123;3&#125;)*)(.[0-9]&#123;1,2&#125;)?$</span></div><div class="line"><span class="code">     ● 备注：这就是最终结果了，别忘了”+”可以用”*”替代。如果你觉得空字符串也可以接受的话(奇怪，为什么?)最后，别忘了在用函数时去掉去掉那个反斜杠，一般的错误都在这里</span></div></pre></td></tr></table></figure>
+<p>文章出自：<a href="http://krzer.com/">Krzer</a> <a href="http://krzer.com/">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;上次在&lt;a href=&quot;http://krzer.com/2015/11/29/Python3-spider-start/&quot;&gt;Python爬虫入门&lt;/a&gt;里提起过正则表达式，但是由于篇幅有限，并没有很详尽地介绍正则表达式更多的用法。我们知道正则表达式的用途极为广泛，可以在爬虫里的匹配字符，在遇到需要校验数据时，也可以使用我们的正则表达式来帮我们完成任务。但是我们在用的时候往往是在网上找他的用法，费时又费力，结果找来的还是不很符合要求。所以我最近把我们日常开发中常用的一些正则表达式整理总结了一下，包括校验数字、字符、一些特殊的需求等等。一来给自己留个底，二来方便大家需要的时候查阅，毕竟我们写博客的目的就是避免重复造轮子嘛。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="代码之路" scheme="http://krzer.com/categories/%E4%BB%A3%E7%A0%81%E4%B9%8B%E8%B7%AF/"/>
+    
+    
+      <category term="数据结构" scheme="http://krzer.com/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="正则表达式" scheme="http://krzer.com/tags/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Python数据结构（二）</title>
+    <link href="http://krzer.com/2015/12/10/Python-_data-structure(2)/"/>
+    <id>http://krzer.com/2015/12/10/Python-_data-structure(2)/</id>
+    <published>2015-12-10T14:25:00.000Z</published>
+    <updated>2015-12-17T12:22:30.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>今天我们就接下来介绍一下剩下的一点常用的Python数据结构。今天介绍的有Sets（集合）和Dictionaries（字典），这两种数据结构虽然用的相对较少，但是在我们学习和使用Python的过程中也是发挥着极大的作用的。长话短说，我们来看看这两种数据结构吧。<br><a id="more"></a></p>
+<h1 id="Sets（集合）"><a href="#Sets（集合）" class="headerlink" title="Sets（集合）"></a>Sets（集合）</h1><p>集合（set）是一个无序不重复元素的集。<br>基本功能是进行成员关系测试和消除重复元素。<br>可以使用大括号{}，或者set()函数创建set集合。<br><strong>注意：创建一个空集合必须用 set() 而不是 { }，因为{ }是用来创建一个空字典。</strong></p>
+<h2 id="集合的构建"><a href="#集合的构建" class="headerlink" title="集合的构建"></a>集合的构建</h2><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; student = &#123;<span class="string">'Tom'</span>, <span class="string">'Jim'</span>, <span class="string">'Mary'</span>, <span class="string">'Tom'</span>, <span class="string">'Jack'</span>, <span class="string">'Rose'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; print(student)   <span class="comment"># 重复的元素被自动去掉</span></div><div class="line">&#123;<span class="string">'Jim'</span>, <span class="string">'Jack'</span>, <span class="string">'Mary'</span>, <span class="string">'Tom'</span>, <span class="string">'Rose'</span>&#125;</div></pre></td></tr></table></figure>
+<h2 id="集合元素测试"><a href="#集合元素测试" class="headerlink" title="集合元素测试"></a>集合元素测试</h2><p>集合还可以用以下的句式来测试集合元素是否在集合中，结果返回类型为布尔型。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">'Rose'</span> <span class="keyword">in</span> student  <span class="comment"># membership testing（元素测试）</span></div><div class="line"><span class="keyword">True</span></div></pre></td></tr></table></figure></p>
+<h2 id="集合运算"><a href="#集合运算" class="headerlink" title="集合运算"></a>集合运算</h2><p>此外，集合还可以通过set来进行集合运算。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>a = set(<span class="string">'abracadabra'</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>b = set(<span class="string">'alacazam'</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>a</div><div class="line">&#123;<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>, <span class="string">'r'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>a - b     <span class="comment"># a和b的差集</span></div><div class="line">&#123;<span class="string">'b'</span>, <span class="string">'d'</span>, <span class="string">'r'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>a | b     <span class="comment"># a和b的并集</span></div><div class="line">&#123;<span class="string">'l'</span>, <span class="string">'m'</span>, <span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>, <span class="string">'z'</span>, <span class="string">'r'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>a &amp; b     <span class="comment"># a和b的交集</span></div><div class="line">&#123;<span class="string">'a'</span>, <span class="string">'c'</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>a ^ b     <span class="comment"># a和b中不同时存在的元素</span></div><div class="line">&#123;<span class="string">'l'</span>, <span class="string">'m'</span>, <span class="string">'b'</span>, <span class="string">'d'</span>, <span class="string">'z'</span>, <span class="string">'r'</span>&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Dictionaries（字典）"><a href="#Dictionaries（字典）" class="headerlink" title="Dictionaries（字典）"></a>Dictionaries（字典）</h1><p>字典（dictionary）是Python中另一个非常有用的内置数据类型。<br>字典是一种映射类型（mapping type），它是一个无序的键 : 值对集合。<br>关键字必须使用<strong>不可变类型</strong>，也就是说list和包含可变类型的tuple不能做关键字。<br><strong>注意：在同一个字典中，关键字还必须互不相同。</strong></p>
+<h2 id="字典的构建"><a href="#字典的构建" class="headerlink" title="字典的构建"></a>字典的构建</h2><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; dic = &#123;&#125;  <span class="comment"># 创建空字典</span></div><div class="line"><span class="meta">&gt;&gt;</span>&gt; tel = &#123;<span class="string">'Jack'</span><span class="symbol">:</span><span class="number">1557</span>, <span class="string">'Tom'</span><span class="symbol">:</span><span class="number">1320</span>, <span class="string">'Rose'</span><span class="symbol">:</span><span class="number">1886</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; tel</div><div class="line">&#123;<span class="string">'Tom'</span>: <span class="number">1320</span>, <span class="string">'Jack'</span>: <span class="number">1557</span>, <span class="string">'Rose'</span>: <span class="number">1886</span>&#125;</div></pre></td></tr></table></figure>
+<h2 id="字典的查询"><a href="#字典的查询" class="headerlink" title="字典的查询"></a>字典的查询</h2><p>字典字典，顾名思义，肯定是像我们日常用的字典一般，可以进行查询操作的，而且查询操作还是字典的最重要功能。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; tel[&apos;Jack&apos;]   # 主要的操作：通过key查询</div><div class="line">1557</div></pre></td></tr></table></figure></p>
+<h2 id="字典的操作"><a href="#字典的操作" class="headerlink" title="字典的操作"></a>字典的操作</h2><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; del tel[<span class="string">'Rose'</span>]  <span class="comment"># 删除一个键值对</span></div><div class="line"><span class="meta">&gt;&gt;</span>&gt; tel[<span class="string">'Mary'</span>] = <span class="number">4127</span>  <span class="comment"># 添加一个键值对</span></div><div class="line"><span class="meta">&gt;&gt;</span>&gt; tel</div><div class="line">&#123;<span class="string">'Tom'</span>: <span class="number">1320</span>, <span class="string">'Jack'</span>: <span class="number">1557</span>, <span class="string">'Mary'</span>: <span class="number">4127</span>&#125;</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; list(tel.keys())  <span class="comment"># 返回所有key组成的list</span></div><div class="line">[<span class="string">'Tom'</span>, <span class="string">'Jack'</span>, <span class="string">'Mary'</span>]</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; sorted(tel.keys()) <span class="comment"># 按key排序</span></div></pre></td></tr></table></figure>
+<h2 id="字典元素测试"><a href="#字典元素测试" class="headerlink" title="字典元素测试"></a>字典元素测试</h2><p>和集合一样，字典也支持元素的测试，返回的类型也是布尔型。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">[<span class="string">'Jack'</span>, <span class="string">'Mary'</span>, <span class="string">'Tom'</span>]</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">'Tom'</span> <span class="keyword">in</span> tel       <span class="comment"># 元素测试</span></div><div class="line"><span class="keyword">True</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">'Mary'</span> <span class="keyword">not</span> <span class="keyword">in</span> tel  <span class="comment"># 元素测试</span></div><div class="line"><span class="keyword">False</span></div></pre></td></tr></table></figure></p>
+<h2 id="字典函数"><a href="#字典函数" class="headerlink" title="字典函数"></a>字典函数</h2><p>构造函数 dict() 直接从键值对sequence中构建字典，当然也可以进行推导，如下：<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; dict([(<span class="string">'sape'</span>, <span class="number">4139</span>), (<span class="string">'guido'</span>, <span class="number">4127</span>), (<span class="string">'jack'</span>, <span class="number">4098</span>)])</div><div class="line">&#123;<span class="string">'jack'</span>: <span class="number">4098</span>, <span class="string">'sape'</span>: <span class="number">4139</span>, <span class="string">'guido'</span>: <span class="number">4127</span>&#125;</div><div class="line"></div><div class="line"><span class="meta">&gt;&gt;</span>&gt; &#123;<span class="symbol">x:</span> x**<span class="number">2</span> for x in (<span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>)&#125;</div><div class="line">&#123;<span class="number">2</span>: <span class="number">4</span>, <span class="number">4</span>: <span class="number">16</span>, <span class="number">6</span>: <span class="number">36</span>&#125;</div><div class="line"></div><div class="line"><span class="meta">&gt;&gt;</span>&gt; dict(sape=<span class="number">4139</span>, guido=<span class="number">4127</span>, jack=<span class="number">4098</span>)</div><div class="line">&#123;<span class="string">'jack'</span>: <span class="number">4098</span>, <span class="string">'sape'</span>: <span class="number">4139</span>, <span class="string">'guido'</span>: <span class="number">4127</span>&#125;</div></pre></td></tr></table></figure></p>
+<p>另外，字典类型也有一些内置的函数，例如clear()、keys()、values()等。<br><strong>注意：</strong></p>
+<ol>
+<li>字典是一种映射类型，它的元素是键值对。</li>
+<li>字典的关键字必须为不可变类型，且不能重复。</li>
+<li>创建空字典使用{ }。</li>
+</ol>
+<p>文章出自：<a href="http://krzer.com/">Krzer</a> <a href="http://krzer.com/">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;今天我们就接下来介绍一下剩下的一点常用的Python数据结构。今天介绍的有Sets（集合）和Dictionaries（字典），这两种数据结构虽然用的相对较少，但是在我们学习和使用Python的过程中也是发挥着极大的作用的。长话短说，我们来看看这两种数据结构吧。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="代码之路" scheme="http://krzer.com/categories/%E4%BB%A3%E7%A0%81%E4%B9%8B%E8%B7%AF/"/>
+    
+    
+      <category term="python" scheme="http://krzer.com/tags/python/"/>
+    
+      <category term="数据结构" scheme="http://krzer.com/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Python数据结构（一）</title>
+    <link href="http://krzer.com/2015/12/08/Python-_data-structure(1)/"/>
+    <id>http://krzer.com/2015/12/08/Python-_data-structure(1)/</id>
+    <published>2015-12-08T12:10:33.000Z</published>
+    <updated>2015-12-10T14:46:06.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>这几天闲着无事，准备着手总结一些Python常用的数据结构，我们知道，一个程序里面必然会有数据的存在，同样的一个或几个数据要组织起来，可以有不同的组织方式，也就是不同的存储方式。不同的组织方式就是不同的结构，我们把这些数据组织在一起的结构称之为数据的结构，也叫做数据结构。Python中数据的组织方式叫做Python的数据结构。<br><a id="more"></a></p>
+<h1 id="Python数据结构的类型"><a href="#Python数据结构的类型" class="headerlink" title="Python数据结构的类型"></a>Python数据结构的类型</h1><p>Python作为一门日趋流行且壮大的编程语言，所拥有的数据类型是相当丰富的，因而可见它的数据结构也是非常多的，其中，Python中系统自己定义好的，不需要我们自己去定义的数据结构叫做Python的内置数据结构，比如列表、元组等，而有些数据组织方式，Python系统里面没有直接定义，需要我们自己去定义实现这些数据的组织方式，这些数据组织方式称为Python的扩展数据结构，比如栈、队列等。</p>
+<h2 id="List（列表）"><a href="#List（列表）" class="headerlink" title="List（列表）"></a>List（列表）</h2><p>List（列表） 是 Python 中使用最频繁的数据类型。<br>列表是写在方括号之间、用逗号分隔开的元素列表。列表中元素的类型可以不相同：</p>
+<h3 id="列表的构建"><a href="#列表的构建" class="headerlink" title="列表的构建"></a>列表的构建</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; a = [<span class="string">'apple'</span>, <span class="number">100</span>, <span class="number">200</span>, <span class="string">'pear'</span>]</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; print(a)</div><div class="line">[<span class="string">'apple'</span>, <span class="number">100</span>, <span class="number">200</span>, <span class="string">'pear'</span>]</div></pre></td></tr></table></figure>
+<p>列表同样可以被索引和切片（所谓的索引和切片就是可以进行查找和截取相应的内容），列表被切片后返回一个包含所需元素的新列表。</p>
+<h3 id="列表的索引"><a href="#列表的索引" class="headerlink" title="列表的索引"></a>列表的索引</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; a = [<span class="string">'apple'</span>, <span class="number">100</span>, <span class="number">200</span>, <span class="string">'pear'</span>]</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; print(a[<span class="number">2</span>])</div><div class="line"><span class="number">200</span></div></pre></td></tr></table></figure>
+<p><strong>注意：在Python的列表中，起始位置是从0开始的，a[2]实际输出的数据是列表中第3个数据</strong></p>
+<h3 id="列表的切片"><a href="#列表的切片" class="headerlink" title="列表的切片"></a>列表的切片</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; a = [<span class="string">'apple'</span>, <span class="number">100</span>, <span class="number">200</span>, <span class="string">'pear'</span>]</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; print(a[<span class="number">0</span><span class="symbol">:</span><span class="number">2</span>])</div><div class="line">[<span class="string">'apple'</span>, <span class="number">100</span>]</div></pre></td></tr></table></figure>
+<h3 id="列表的串联"><a href="#列表的串联" class="headerlink" title="列表的串联"></a>列表的串联</h3><p>此外列表还支持串联操作，使用+操作符：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; a = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]</div><div class="line">&gt;&gt;&gt; a + [<span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>]</div><div class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>]</div></pre></td></tr></table></figure></p>
+<h3 id="列表的赋值"><a href="#列表的赋值" class="headerlink" title="列表的赋值"></a>列表的赋值</h3><p>对于强大的Python来说，在Python的列表中的元素是可以改变的：<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; a = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; a[<span class="number">0</span>] = <span class="number">9</span></div><div class="line"><span class="meta">&gt;&gt;</span>&gt; a[<span class="number">2</span><span class="symbol">:</span><span class="number">5</span>] = [<span class="number">13</span>, <span class="number">14</span>, <span class="number">15</span>]</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; a</div><div class="line">[<span class="number">9</span>, <span class="number">2</span>, <span class="number">13</span>, <span class="number">14</span>, <span class="number">15</span>, <span class="number">6</span>]</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; a[<span class="number">2</span><span class="symbol">:</span><span class="number">5</span>] = []   <span class="comment"># 删除此段列表</span></div><div class="line"><span class="meta">&gt;&gt;</span>&gt; a</div><div class="line">[<span class="number">9</span>, <span class="number">2</span>, <span class="number">6</span>]</div></pre></td></tr></table></figure></p>
+<p>此外List还内置了有很多方法，例如append()、pop()等等。如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">方法</th>
+<th></th>
+<th>描述</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.append(x)</td>
+<td></td>
+<td>把一个元素添加到列表的结尾，相当于 a[len(a):] = [x]。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.extend(L)</td>
+<td></td>
+<td>通过添加指定列表的所有元素来扩充列表，相当于 a[len(a):] = L。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.insert(i, x)</td>
+<td></td>
+<td>在指定位置插入一个元素。第一个参数是准备插入到其前面的那个元素的索引，例如 a.insert(0, x) 会插入到整个列表之前，而 a.insert(len(a), x) 相当于 a.append(x) 。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.remove(x)</td>
+<td></td>
+<td>删除列表中值为 x 的第一个元素。如果没有这样的元素，就会返回一个错误。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.pop([i])</td>
+<td></td>
+<td>从列表的指定位置删除元素，并将其返回。如果没有指定索引，a.pop()返回最后一个元素。元素随即从列表中被删除。（方法中 i 两边的方括号表示这个参数是可选的，而不是要求你输入一对方括号，你会经常在 Python 库参考手册中遇到这样的标记。）</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.clear()</td>
+<td></td>
+<td>移除列表中的所有项，等于del a[:]。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.index(x)</td>
+<td></td>
+<td>返回列表中第一个值为 x 的元素的索引。如果没有匹配的元素就会返回一个错误。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.count(x)</td>
+<td></td>
+<td>返回 x 在列表中出现的次数。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.sort()</td>
+<td></td>
+<td>对列表中的元素进行排序。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.reverse()</td>
+<td></td>
+<td>倒排列表中的元素。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">list.copy()</td>
+<td></td>
+<td>返回列表的浅复制，等于a[:]。</td>
+</tr>
+</tbody>
+</table>
+<p>下面是表格中大部分方法的实例：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; a = [<span class="number">66.25</span>, <span class="number">333</span>, <span class="number">333</span>, <span class="number">1</span>, <span class="number">1234.5</span>]</div><div class="line">&gt;&gt;&gt; print(a.count(<span class="number">333</span>), a.count(<span class="number">66.25</span>), a.count('x'))</div><div class="line"><span class="number">2</span> <span class="number">1</span> <span class="number">0</span></div><div class="line">&gt;&gt;&gt; a.insert(<span class="number">2</span>, <span class="number">-1</span>)</div><div class="line">&gt;&gt;&gt; a.append(<span class="number">333</span>)</div><div class="line">&gt;&gt;&gt; a</div><div class="line">[<span class="number">66.25</span>, <span class="number">333</span>, <span class="number">-1</span>, <span class="number">333</span>, <span class="number">1</span>, <span class="number">1234.5</span>, <span class="number">333</span>]</div><div class="line">&gt;&gt;&gt; a.index(<span class="number">333</span>)</div><div class="line"><span class="number">1</span></div><div class="line">&gt;&gt;&gt; a.remove(<span class="number">333</span>)</div><div class="line">&gt;&gt;&gt; a</div><div class="line">[<span class="number">66.25</span>, <span class="number">-1</span>, <span class="number">333</span>, <span class="number">1</span>, <span class="number">1234.5</span>, <span class="number">333</span>]</div><div class="line">&gt;&gt;&gt; a.reverse()</div><div class="line">&gt;&gt;&gt; a</div><div class="line">[<span class="number">333</span>, <span class="number">1234.5</span>, <span class="number">1</span>, <span class="number">333</span>, <span class="number">-1</span>, <span class="number">66.25</span>]</div><div class="line">&gt;&gt;&gt; a.sort()</div><div class="line">&gt;&gt;&gt; a</div><div class="line">[<span class="number">-1</span>, <span class="number">1</span>, <span class="number">66.25</span>, <span class="number">333</span>, <span class="number">333</span>, <span class="number">1234.5</span>]</div></pre></td></tr></table></figure></p>
+<p><strong>注意：</strong></p>
+<ol>
+<li>List写在方括号之间，元素用逗号隔开。</li>
+<li>和字符串一样，list可以被索引和切片。</li>
+<li>List可以使用+操作符进行拼接。</li>
+<li>List中的元素是可以改变的。</li>
+</ol>
+<h2 id="Tuple（元组）"><a href="#Tuple（元组）" class="headerlink" title="Tuple（元组）"></a>Tuple（元组）</h2><p>元组（tuple）与列表类似，不同之处在于元组的元素不能修改。元组写在小括号里，元素之间用逗号隔开。</p>
+<h3 id="元组的构建"><a href="#元组的构建" class="headerlink" title="元组的构建"></a>元组的构建</h3><p>元组中的元素类型也可以不相同：<br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; a = ('apple', <span class="number">100</span>, <span class="number">200</span>, 'pear')</div><div class="line">&gt;&gt;&gt; print(<span class="name">a</span>, type(<span class="name">a</span>), len(<span class="name">a</span>))</div><div class="line">('apple', <span class="number">100</span>, <span class="number">200</span>, 'pear') &lt;class 'tuple'&gt; <span class="number">4</span></div></pre></td></tr></table></figure></p>
+<h3 id="元组的索引与切片"><a href="#元组的索引与切片" class="headerlink" title="元组的索引与切片"></a>元组的索引与切片</h3><p>元组与列表类似，可以被索引且下标索引从0开始，也可以进行截取/切片（看上面，这里不再赘述）。<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; tup = (<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>)</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; print(tup[<span class="number">0</span>], tup[<span class="number">1</span><span class="symbol">:</span><span class="number">5</span>])</div><div class="line"><span class="number">1</span> (<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>)</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; tup[<span class="number">0</span>] = <span class="number">11</span>  <span class="comment"># 修改元组元素的操作是非法的</span></div></pre></td></tr></table></figure></p>
+<p><strong>虽然tuple的元素不可改变，但它可以包含可变的对象，比如list列表。</strong></p>
+<h3 id="元组的串联"><a href="#元组的串联" class="headerlink" title="元组的串联"></a>元组的串联</h3><p>此外，元组也支持用+操作符：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; tup1, tup2 = (<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>), (<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>)</div><div class="line">&gt;&gt;&gt; print(tup1+tup2)</div><div class="line">(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>)</div></pre></td></tr></table></figure></p>
+<h3 id="元组的特殊语法"><a href="#元组的特殊语法" class="headerlink" title="元组的特殊语法"></a>元组的特殊语法</h3><p>构造包含0个或1个元素的tuple是个特殊的问题，所以有一些额外的语法规则：<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="attr">tup1</span> = () # 空元组</div><div class="line"><span class="attr">tup2</span> = (<span class="number">20</span>,) # 一个元素，需要在元素后添加逗号</div></pre></td></tr></table></figure></p>
+<p><strong>string、list和tuple都属于sequence（序列）。</strong></p>
+<p><strong>注意：</strong></p>
+<ol>
+<li>与字符串一样，元组的元素不能修改。</li>
+<li>元组也可以被索引和切片，方法一样。</li>
+<li>注意构造包含0或1个元素的元组的特殊语法规则。</li>
+<li>元组也可以使用+操作符进行拼接。</li>
+</ol>
+<p>文章出自：<a href="http://krzer.com/">Krzer</a> <a href="http://krzer.com/">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;这几天闲着无事，准备着手总结一些Python常用的数据结构，我们知道，一个程序里面必然会有数据的存在，同样的一个或几个数据要组织起来，可以有不同的组织方式，也就是不同的存储方式。不同的组织方式就是不同的结构，我们把这些数据组织在一起的结构称之为数据的结构，也叫做数据结构。Python中数据的组织方式叫做Python的数据结构。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="代码之路" scheme="http://krzer.com/categories/%E4%BB%A3%E7%A0%81%E4%B9%8B%E8%B7%AF/"/>
+    
+    
+      <category term="python" scheme="http://krzer.com/tags/python/"/>
+    
+      <category term="数据结构" scheme="http://krzer.com/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Python3爬虫实战</title>
+    <link href="http://krzer.com/2015/12/03/Python3-spider-_practice/"/>
+    <id>http://krzer.com/2015/12/03/Python3-spider-_practice/</id>
+    <published>2015-12-03T14:25:00.000Z</published>
+    <updated>2015-12-08T07:49:26.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>昨天讲了爬虫入门的基础知识已经基本够用了，今天我们来写一个小爬虫实战一下，练练手。在这里说一下，访问的网站如果禁止爬虫抓取的话，那么我们就要加上头文件，来模拟浏览器抓取网页信息，但是有的网站并不禁止爬虫抓取，那么我们便可加可不加，加的话势必会影响爬虫抓取的速度，这里大家可以自由选择啦。</p>
+<p>我初步的设想是抓抓学校老师们的靓照，给大家欣赏一下（奸笑），首先我们必须先访问一下学校的网站，看看教师简介在哪里，偷偷地复制一下网址，再看看源码，便可以着手写爬虫了，此处省取若干字……大家自行脑补，我还是直接上代码吧，Talk Is Cheap, Show Me The Code!<br><a id="more"></a></p>
+<p>代码如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#--*--coding:utf-8--*--</span></div><div class="line"><span class="keyword">import</span> re <span class="comment">#导入re库，正则表达式库</span></div><div class="line"><span class="keyword">import</span> urllib.request </div><div class="line"><span class="keyword">from</span> urllib.error <span class="keyword">import</span> URLError,HTTPError </div><div class="line"><span class="keyword">import</span> sys</div><div class="line"></div><div class="line">url = <span class="string">"http://www.hainu.edu.cn/stm/xinxi/shtml_liebiao.asp@bbsid=5419.shtml"</span></div><div class="line"><span class="comment"># 给文件加入头信息，用以模拟浏览器访问</span></div><div class="line">user_agent = <span class="string">'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'</span></div><div class="line">headers = &#123;</div><div class="line">    <span class="string">'Connection'</span>: <span class="string">'Keep-Alive'</span>,</div><div class="line">    <span class="string">'Accept'</span>: <span class="string">'text/html, application/xhtml+xml, */*'</span>,</div><div class="line">    <span class="string">'Accept-Language'</span>: <span class="string">'en-US,en;q=0.8,zh-Hans-CN;q=0.5,zh-Hans;q=0.3'</span>,</div><div class="line">    <span class="string">'User-Agent'</span>: <span class="string">'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko'</span></div><div class="line">&#125;</div><div class="line">j=<span class="number">1</span> <span class="comment">#第j张照片，后面用到</span></div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">5419</span>,<span class="number">5426</span>):</div><div class="line">    <span class="keyword">try</span>: <span class="comment">#try是一种处理异常的语句</span></div><div class="line">        <span class="comment">#实现翻页翻页</span></div><div class="line">        url1 = re.sub(<span class="string">'bbsid=\d+'</span>,<span class="string">'bbsid=%d'</span>%i,url,re.S) <span class="comment">#sub实现替换功能</span></div><div class="line">        print(url1)</div><div class="line">        <span class="comment">#发送请求，获得返回信息</span></div><div class="line">        req1 = urllib.request.Request(url1,headers=headers) <span class="comment">#模拟浏览器请求访问url1</span></div><div class="line">        response = urllib.request.urlopen(req1,timeout=<span class="number">15</span>) <span class="comment">#返回一个 http.client.HTTPResponse 对象，允许延迟15秒</span></div><div class="line">        content1 = response.read().decode(<span class="string">'gbk'</span>) <span class="comment">#以'gbk'的编码格式读取</span></div><div class="line">        <span class="comment">#处理获取的web网页，并将信息处理了</span></div><div class="line">        items1 = re.findall(<span class="string">'&lt;a target="_blank" href="(.*?)"&gt;'</span>,content1,re.S) <span class="comment">#进行正则匹配</span></div><div class="line"></div><div class="line">        <span class="keyword">for</span> url2 <span class="keyword">in</span> items1:</div><div class="line">            url2 = <span class="string">'http://www.hainu.edu.cn'</span> + url2</div><div class="line">            req2 = urllib.request.Request(url2,headers=headers)</div><div class="line">            response = urllib.request.urlopen(req2,timeout=<span class="number">15</span>)</div><div class="line">            content2 = response.read().decode(<span class="string">'gbk'</span>)</div><div class="line">            picurl = re.findall(<span class="string">'&lt;a target="_blank" title="在新窗口打开" href=(.*?)&gt;'</span>,content2,re.S)</div><div class="line">            <span class="keyword">if</span> len(picurl) &gt; <span class="number">0</span> :</div><div class="line">                picurl0 = <span class="string">'http://www.hainu.edu.cn'</span> + picurl[<span class="number">0</span>]</div><div class="line">                pic = urllib.request.urlopen(picurl0)</div><div class="line">                jpgpic = pic.read()</div><div class="line">                <span class="comment">#首先你得有个pic文件夹</span></div><div class="line">                fp = open(<span class="string">'pic/'</span>+str(j)+<span class="string">'.jpg'</span>,<span class="string">"wb"</span>) <span class="comment">#以二进制写</span></div><div class="line">                print(<span class="string">'正在捕获第%d位老师'</span>%j)</div><div class="line">                <span class="comment"># 写入文件</span></div><div class="line">                fp.write(jpgpic)</div><div class="line">                fp.close()</div><div class="line">                j=j+<span class="number">1</span></div><div class="line">          </div><div class="line">    <span class="keyword">except</span> HTTPError <span class="keyword">as</span> e: <span class="comment"># except为异常类型，e为异常处理代码段</span></div><div class="line">        print(<span class="string">"HTTPError"</span>)</div><div class="line">    <span class="keyword">except</span> URLError <span class="keyword">as</span> e:</div><div class="line">        print(<span class="string">"URLError"</span>)</div></pre></td></tr></table></figure></p>
+<p>文章出自：<a href="http://www.krzer.com" target="_blank" rel="external">Krzer</a> <a href="http://www.krzer.com" target="_blank" rel="external">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;昨天讲了爬虫入门的基础知识已经基本够用了，今天我们来写一个小爬虫实战一下，练练手。在这里说一下，访问的网站如果禁止爬虫抓取的话，那么我们就要加上头文件，来模拟浏览器抓取网页信息，但是有的网站并不禁止爬虫抓取，那么我们便可加可不加，加的话势必会影响爬虫抓取的速度，这里大家可以自由选择啦。&lt;/p&gt;
+&lt;p&gt;我初步的设想是抓抓学校老师们的靓照，给大家欣赏一下（奸笑），首先我们必须先访问一下学校的网站，看看教师简介在哪里，偷偷地复制一下网址，再看看源码，便可以着手写爬虫了，此处省取若干字……大家自行脑补，我还是直接上代码吧，Talk Is Cheap, Show Me The Code!&lt;br&gt;
+    
+    </summary>
+    
+      <category term="代码之路" scheme="http://krzer.com/categories/%E4%BB%A3%E7%A0%81%E4%B9%8B%E8%B7%AF/"/>
+    
+    
+      <category term="python" scheme="http://krzer.com/tags/python/"/>
+    
+      <category term="爬虫" scheme="http://krzer.com/tags/%E7%88%AC%E8%99%AB/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Python3爬虫入门</title>
+    <link href="http://krzer.com/2015/11/29/Python3-spider-start/"/>
+    <id>http://krzer.com/2015/11/29/Python3-spider-start/</id>
+    <published>2015-11-29T14:25:00.000Z</published>
+    <updated>2015-12-08T07:49:58.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>前几个礼拜接受了老师的要求给大家讲节课，本来说好了讲讲Python的GUI界面wxpython，但是wxpython只支持到了python2，说是出了个phoenix版本的可以支持python3，无奈找了半天也没找到，再加上自己对GUI实在也是无感，就放弃寻找了，恰巧有人讲了tkinter，于是我厚着脸皮跟老师说能不能换成爬虫或是web之类的，老师竟然同意啦，所以我就转战爬虫了，网上的python3爬虫教程之类的少的可怜，初学起来也确实是不容易，不是说他难，而是基本教程什么的都是python2，容易混起来，要是没有发现的话调试得都会发疯。因此我写下这篇文章，一来是给自己长点记性，二来也能分享给大家，大家一起学习进步。<br><a id="more"></a></p>
+<h1 id="正则表达式："><a href="#正则表达式：" class="headerlink" title="正则表达式："></a>正则表达式：</h1><p>说到入门的爬虫，必然要用到正则表达式，正则表达式是很简单的，相信大家半小时之类肯定学得溜得飞起，在这里我就简单说一点。</p>
+<ul>
+<li>常用方法：findall，search，sub</li>
+<li>常用符号：点号，星号，问号与括号</li>
+<li>常用技巧</li>
+</ul>
+<h2 id="常用方法："><a href="#常用方法：" class="headerlink" title="常用方法："></a>常用方法：</h2><blockquote>
+<ul>
+<li>findall： 匹配所有符合规律的内容，返回包含结果的列表</li>
+<li>Search：匹配并提取第一个符合规律的内容，返回一个正则表达式对象（object)</li>
+<li>Sub：替换符合规律的内容，返回替换后的值</li>
+</ul>
+</blockquote>
+<h2 id="常用符号："><a href="#常用符号：" class="headerlink" title="常用符号："></a>常用符号：</h2><ul>
+<li><p>.  :  匹配任意字符，换行符\n除外</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">#.的使用举例</div><div class="line"><span class="selector-tag">a</span> = <span class="string">'xy123'</span></div><div class="line"><span class="selector-tag">b</span> = re.findall(<span class="string">'x...'</span>,a)</div><div class="line"><span class="function"><span class="title">print</span><span class="params">(b)</span></span></div><div class="line">&gt;&gt;&gt;</div><div class="line">[<span class="string">'xy12'</span>]</div></pre></td></tr></table></figure>
+</li>
+<li><p>*：匹配前一个字符0次或无限次</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">#*的使用举例</div><div class="line"><span class="selector-tag">a</span> = <span class="string">'xyxy123'</span></div><div class="line"><span class="selector-tag">b</span> = re.findall(<span class="string">'x*'</span>,a)</div><div class="line"><span class="function"><span class="title">print</span><span class="params">(b)</span></span></div><div class="line">&gt;&gt;&gt;</div><div class="line">[<span class="string">'x'</span>, <span class="string">''</span>, <span class="string">'x'</span>, <span class="string">''</span>, <span class="string">''</span>, <span class="string">''</span>, <span class="string">''</span>, <span class="string">''</span>]</div></pre></td></tr></table></figure>
+</li>
+<li><p>? ：匹配前一个字符0次或1次</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#?的使用举例</span></div><div class="line">a = <span class="string">'xy123'</span></div><div class="line">b = re.findall(<span class="string">'x?'</span>,a)</div><div class="line">print(b)</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; </div><div class="line">[<span class="string">'x'</span>, <span class="string">''</span>, <span class="string">''</span>, <span class="string">''</span>, <span class="string">''</span>, <span class="string">''</span>]</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><strong>上面的内容全部都是只需要了解即可，需要掌握的只有下面这一种组合方式(.*?)</strong></p>
+<ul>
+<li><p>.*：贪心算法</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">#.*的使用举例</div><div class="line">secret_code = <span class="string">'hadkfalifexxhaixxfasdjifja134xxnanxx23345sdfxxuniversityxx8dfse'</span></div><div class="line"><span class="selector-tag">b</span> = re.findall(<span class="string">'xx.*xx'</span>,secret_code)</div><div class="line"><span class="function"><span class="title">print</span><span class="params">(b)</span></span></div><div class="line">&gt;&gt;&gt; </div><div class="line">[<span class="string">'xxhaixxfasdjifja134xxnanxx23345sdfxxuniversityxx'</span>]</div></pre></td></tr></table></figure>
+</li>
+<li><p>.*?：非贪心算法</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#.*?的使用举例</span></div><div class="line">secret_code = <span class="string">'hadkfalifexxhaixxfasdjifja134xxnanxx23345sdfxxuniversityxx8dfse'</span></div><div class="line">c = re.findall(<span class="string">'xx.*?xx'</span>,secret_code)</div><div class="line">print(c)</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; </div><div class="line">[<span class="string">'xxhaixx'</span>, <span class="string">'xxnanxx'</span>, <span class="string">'xxuniversityxx'</span>]</div></pre></td></tr></table></figure>
+</li>
+<li><p>（）：括号内的数据作为结果返回</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#使用括号与不使用括号的差别</span></div><div class="line">secret_code = <span class="string">'hadkfalifexxhaixxfasdjifja134xxnanxx23345sdfxxuniversityxx8dfse'</span></div><div class="line">d = re.findall(<span class="string">'xx(.*?)xx'</span>,secret_code)</div><div class="line">print(d)</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; </div><div class="line">[<span class="string">'hai'</span>, <span class="string">'nan'</span>, <span class="string">'university'</span>]</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="常用技巧："><a href="#常用技巧：" class="headerlink" title="常用技巧："></a>常用技巧：</h2><figure class="highlight livescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> re    <span class="comment">#导入re库，之后调用re库需要re.</span></div><div class="line"><span class="keyword">from</span> re <span class="keyword">import</span> <span class="comment">#导入re库，之后调用re库不需要re.</span></div><div class="line"><span class="keyword">from</span> re <span class="keyword">import</span> findall,search,sub,S</div><div class="line">不需要complie <span class="comment">#一般情况下不建议使用complie</span></div><div class="line">使用<span class="string">\d+匹配纯数字</span></div></pre></td></tr></table></figure>
+<p>一般情况下使用sub实现换页功能，并使用findall与search从大量文本中匹配感兴趣的内容，谨记：</p>
+<ul>
+<li>灵活使用findall与search</li>
+<li>先抓大再抓小</li>
+</ul>
+<h1 id="Python3爬虫入门"><a href="#Python3爬虫入门" class="headerlink" title="Python3爬虫入门"></a>Python3爬虫入门</h1><ul>
+<li>给文件加入头信息，用以模拟浏览器访问</li>
+<li>用python抓取指定网页</li>
+<li>实现可变网站的访问</li>
+<li>将网页内容保存</li>
+</ul>
+<h2 id="给文件加入头信息，用以模拟浏览器访问："><a href="#给文件加入头信息，用以模拟浏览器访问：" class="headerlink" title="给文件加入头信息，用以模拟浏览器访问："></a>给文件加入头信息，用以模拟浏览器访问：</h2><p>我们知道很多网站为了防止爬虫的恶意抓取，都采取了相应的技术来禁止爬虫的抓取，但是我们用户确实可以正常访问的，所以我们要是让我们的爬虫模拟我们访问网站来进行抓取，问题不就迎刃而解了吗？恰好我们这里可以给文件加入头信息，来模拟浏览器的访问。</p>
+<p>代码如下：<br><figure class="highlight actionscript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">user_agent = <span class="string">'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'</span></div><div class="line">headers = &#123;</div><div class="line">    <span class="string">'Connection'</span>: <span class="string">'Keep-Alive'</span>,</div><div class="line">    <span class="string">'Accept'</span>: <span class="string">'text/html, application/xhtml+xml, */*'</span>,</div><div class="line">    <span class="string">'Accept-Language'</span>: <span class="string">'en-US,en;q=0.8,zh-Hans-CN;q=0.5,zh-Hans;q=0.3'</span>,</div><div class="line">    <span class="string">'User-Agent'</span>: <span class="string">'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko'</span></div></pre></td></tr></table></figure></p>
+<p>怎么获取头信息，FireFox可以安装一些firebug、Live HTTP Headers之类的插件，有的浏览器在开发者工具里是可以直接看到的，当然也有其他插件可以实现。</p>
+<h2 id="用python抓取指定网页："><a href="#用python抓取指定网页：" class="headerlink" title="用python抓取指定网页："></a>用python抓取指定网页：</h2><p>代码如下：<br><figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> urllib.request</div><div class="line"></div><div class="line"><span class="title">url</span>= <span class="string">"http://www.baidu.com"</span></div><div class="line"><span class="class"><span class="keyword">data</span> = urllib.request.urlopen(<span class="title">url</span>).read()#</span></div><div class="line"><span class="class"><span class="keyword">data</span> = <span class="keyword">data</span>.decode('<span class="type">UTF</span>-8')</span></div><div class="line"><span class="title">print</span>(<span class="class"><span class="keyword">data</span>)</span></div></pre></td></tr></table></figure></p>
+<p>在python3中是用urllib.request代替python2中的urllib的，python3中的urllib有了更多的功能，官方文档是这样讲的：</p>
+<blockquote>
+<p>a new urllib package was created. It consists of code from<br>urllib, urllib2, urlparse, and robotparser. The old<br>modules have all been removed. The new package has five submodules:<br>urllib.parse, urllib.request, urllib.response,<br>urllib.error, and urllib.robotparser. The<br>urllib.request.urlopen() function uses the url opener from<br>urllib2. (Note that the unittests have not been renamed for the<br>beta, but they will be renamed in the future.)</p>
+</blockquote>
+<p>urllib.request.urlopen(url)<a href="https://docs.python.org/3/library/urllib.html" target="_blank" rel="external">官方文档</a>返回一个 http.client.HTTPResponse 对象, 这个对象又用到的read()方法;返回数据；这个函数返回一个 http.client.HTTPResponse 对象, 这个对象又有各种方法, 比如我们用到的read()方法。</p>
+<h2 id="实现可变网站的访问："><a href="#实现可变网站的访问：" class="headerlink" title="实现可变网站的访问："></a>实现可变网站的访问：</h2><p>代码如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> urllib</div><div class="line"><span class="keyword">import</span> urllib.request</div><div class="line">data=&#123;&#125;</div><div class="line">data[<span class="string">'word'</span>]=<span class="string">'python spider'</span></div><div class="line">url_values=urllib.parse.urlencode(data)</div><div class="line">url=<span class="string">"http://www.baidu.com/s?"</span></div><div class="line">full_url=url+url_values</div><div class="line">a = urllib.request.urlopen(full_url)</div><div class="line">data=a.read()</div><div class="line">data=data.decode(<span class="string">'UTF-8'</span>)</div><div class="line">print(data)</div><div class="line"><span class="comment">##打印出网址：</span></div><div class="line">a.geturl()</div></pre></td></tr></table></figure></p>
+<p>data是一个字典, 然后通过urllib.parse.urlencode()来将data转换为 ‘word=python+spider’的字符串, 最后和url合并为full_url。</p>
+<h2 id="将网页图片内容保存："><a href="#将网页图片内容保存：" class="headerlink" title="将网页图片内容保存："></a>将网页图片内容保存：</h2><p>代码如下：<br><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">pic = urllib.request.urlopen(picurl)</div><div class="line">jpgpic = pic.<span class="built_in">read</span>()</div><div class="line"><span class="comment">#首先你得有个pic文件夹</span></div><div class="line">fp = <span class="built_in">open</span>(<span class="string">'pic/'</span>+str(j)+<span class="string">'.jpg'</span>,<span class="string">"wb"</span>)</div><div class="line">print(<span class="string">'now downloading：'</span>)</div><div class="line"><span class="comment"># 写入文件</span></div><div class="line">fp.<span class="built_in">write</span>(jpgpic)</div><div class="line">fp.<span class="built_in">close</span>()</div><div class="line">j=j+<span class="number">1</span></div></pre></td></tr></table></figure></p>
+<p>将网站上的jpg图片保存在本地pic文件夹内，当然你也可以保存在其他地方。利用文件时，记得关闭哦。</p>
+<p>文章出自：<a href="http://www.krzer.com" target="_blank" rel="external">Krzer</a> <a href="http://www.krzer.com" target="_blank" rel="external">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;前几个礼拜接受了老师的要求给大家讲节课，本来说好了讲讲Python的GUI界面wxpython，但是wxpython只支持到了python2，说是出了个phoenix版本的可以支持python3，无奈找了半天也没找到，再加上自己对GUI实在也是无感，就放弃寻找了，恰巧有人讲了tkinter，于是我厚着脸皮跟老师说能不能换成爬虫或是web之类的，老师竟然同意啦，所以我就转战爬虫了，网上的python3爬虫教程之类的少的可怜，初学起来也确实是不容易，不是说他难，而是基本教程什么的都是python2，容易混起来，要是没有发现的话调试得都会发疯。因此我写下这篇文章，一来是给自己长点记性，二来也能分享给大家，大家一起学习进步。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="代码之路" scheme="http://krzer.com/categories/%E4%BB%A3%E7%A0%81%E4%B9%8B%E8%B7%AF/"/>
+    
+    
+      <category term="python" scheme="http://krzer.com/tags/python/"/>
+    
+      <category term="爬虫" scheme="http://krzer.com/tags/%E7%88%AC%E8%99%AB/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>欢迎来到Krzer</title>
+    <link href="http://krzer.com/2015/11/22/Welcome-To-Krzer/"/>
+    <id>http://krzer.com/2015/11/22/Welcome-To-Krzer/</id>
+    <published>2015-11-22T11:11:54.000Z</published>
+    <updated>2015-12-08T07:50:22.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Welcome to <a href="http://krzer.com/">Krzer</a>! This is my very first post. </p>
+<h3 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">print(<span class="string">"Hello World"</span>)</div></pre></td></tr></table></figure>
+<h3 id="Ruby"><a href="#Ruby" class="headerlink" title="Ruby"></a>Ruby</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">puts <span class="string">"Hello World"</span></div></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3 id="Lua"><a href="#Lua" class="headerlink" title="Lua"></a>Lua</h3><figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">io</span>.write(<span class="string">"Hello world"</span>)</div></pre></td></tr></table></figure>
+<h3 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWord</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;	</div><div class="line">		System.out.println(<span class="string">"hello world"</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="C"><a href="#C" class="headerlink" title="C"></a>C</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"Hello, world!"</span>);</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="Lisp"><a href="#Lisp" class="headerlink" title="Lisp"></a>Lisp</h3><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">(<span class="name">DEFUN</span> HELLO()</div><div class="line">  <span class="string">"HELLO WORLD"</span></div><div class="line">)</div></pre></td></tr></table></figure>
+<p>文章出自：<a href="http://www.krzer.com" target="_blank" rel="external">Krzer</a> <a href="http://www.krzer.com" target="_blank" rel="external">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Welcome to &lt;a href=&quot;http://krzer.com/&quot;&gt;Krzer&lt;/a&gt;! This is my very first post. &lt;/p&gt;
+&lt;h3 id=&quot;Python&quot;&gt;&lt;a href=&quot;#Python&quot; class=&quot;headerlink&quot; title=&quot;Python&quot;&gt;&lt;/a&gt;Python&lt;/h3&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;print(&lt;span class=&quot;string&quot;&gt;&quot;Hello World&quot;&lt;/span&gt;)&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;Ruby&quot;&gt;&lt;a href=&quot;#Ruby&quot; class=&quot;headerlink&quot; title=&quot;Ruby&quot;&gt;&lt;/a&gt;Ruby&lt;/h3&gt;&lt;figure class=&quot;highlight ruby&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;puts &lt;span class=&quot;string&quot;&gt;&quot;Hello World&quot;&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+    
+  </entry>
+  
+</feed>
