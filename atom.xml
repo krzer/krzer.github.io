@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://krzer.com/"/>
-  <updated>2016-11-21T14:51:11.785Z</updated>
+  <updated>2016-11-22T17:20:49.142Z</updated>
   <id>http://krzer.com/</id>
   
   <author>
@@ -14,6 +14,50 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Flask简介及实现原理</title>
+    <link href="http://krzer.com/2016/11/22/flask-introduction/"/>
+    <id>http://krzer.com/2016/11/22/flask-introduction/</id>
+    <published>2016-11-22T13:17:18.000Z</published>
+    <updated>2016-11-22T17:20:49.142Z</updated>
+    
+    <content type="html"><![CDATA[<p>自从选修了Python程序设计之后，对Python的喜爱就一天天的狂热起来了。刚开始对他有好感仅仅是因为他是一种解释型的语言，心里觉得：“哎呦，这家伙真TM酷，可以像和我们对话一样运行我们的代码！”当时对于老师所说的“胶水语言”，根本就不理解是个啥，后来慢慢接触得多了，才知道Python拥有众多的包和库文件，能够轻松地将C、C++和JAVA等程序语言写的模块用起来。也就是从这个时候起就慢慢被Python深深地吸引了，折服于这个神奇的语言。<a id="more"></a></p>
+<p>Python是个强大的语言，我们通常将其用于大数据计算，数据统计和Web爬虫，但是殊不知Python在web方面也是挺有作为的，其中我们熟知的豆瓣、Reddit、Quora和Dropbox等网站都是用Python来进行开发的，还有不少的网站都会在网站上用Python来作为扩展脚本语言进行开发，比如Facebook和Youtube。</p>
+<p>在开发网站的时候，我们常常要使用网站框架，那么我们为什么要使用网站框架呢？因为网站系统发展到今天已经很复杂了，特别是服务器端软件，涉及到的知识，内容，非常广泛。这样开发出完善健壮的软件，对程序员的要求将会非常高。如果采用成熟，稳健的框架，那么一些基础的通用工作，比如，事物处理，安全性，数据流控制等都可以交给框架处理，那么程序员只需要集中精力完成系统的业务逻辑设计，可以降低开发难度。Python最出名的框架当然要数Django，此外还有Flask、Web2py、Tornado、webpy（开发者是大名鼎鼎的Aaron Swartz）和Bottle等框架。虽然Flask不是最出名的框架，但是他应该算得上是最灵活的框架了，这也就是我选择它的原因之一，再者它还是一个很轻量级的框架，一切都由你来决定，不再局限于传统的MVC开发模式（不是说MVC模式不好@_@）。这些特点其实也就是Flask受到广大开发者的喜爱的原因。</p>
+<h1 id="什么是Flask"><a href="#什么是Flask" class="headerlink" title="什么是Flask"></a>什么是Flask</h1><p>Flask是由Python语言编写开发而成的<strong>轻量级</strong>的Web开发框架。Flask的作者是Armin Ronacher（同时他也是 Werkzeug 及 Jinja2 的作者，也是一个大神级别的人物）。本来这只是作者的一个愚人节玩笑，不过没想到后来大受欢迎，进而成为了一个正式的项目，并发展至今（这里我得吐槽几句，你能想象这个牛逼的框架只是人家的一个愚人节玩笑么？也就是说这个只是他的一个玩具，纯属做着玩的，人家根本不当那么一回事，顿时感觉智商受到10000点的嘲讽）。</p>
+<p><img src="http://7xolkd.com1.z0.glb.clouddn.com/2016112201.jpg" alt="Flask"><br>Flask基于Werkzeug WSGI工具箱和Jinja2 模板引擎。 Flask使用BSD授权。 Flask也被称为“microframework”，因为它使用简单的核心，用extension增加其他功能。Flask没有默认使用的数据库、窗体验证工具。然而，Flask保留了扩增的弹性，可以用Flask-extension加入这些功能：ORM、窗体验证工具、文件上传、各种开放式身份验证技术。我们可以这么理解，Flask是一个核心，而其他功能则是一些插件，需要什么功能，只要找到对应的插件，将其插入核心就能够实现该功能了。</p>
+<h1 id="简谈Flask实现原理"><a href="#简谈Flask实现原理" class="headerlink" title="简谈Flask实现原理"></a>简谈Flask实现原理</h1><p>Flask是怎么将代码转换为我们可见的Web网页的。首先，我们得先从Web程序的一般流程来看，对于我们的Web应用来说，当客户端想要获取<strong>动态资源</strong>时，（比如ASP和PHP这类语言写的网站），这个时候就会发起一个HTTP请求（比如用浏览器访问一个URL），此时Web应用程序就会在服务器后台进行相应的业务处理（比如对数据库进行操作或是进行一些计算操作等），取出用户需要的数据，生成相应的HTTP响应（当然，如果访问的是<strong>静态资源</strong>，服务器则会直接返回用户所需的资源，不会进行业务处理）。整个处理工程如下所示：<br><img src="http://7xolkd.com1.z0.glb.clouddn.com/2016112202.jpg" alt="HTTP请求"></p>
+<p>在实际的应用中，不同的请求可能会调用相同的处理逻辑。这里有着相同业务处理逻辑的HTTP请求可以用一类URL来标识。比如在我们的博客站点中，对于所有想要获取Articles内容的请求而言，可以用 articles/<article_id>/这类URL来表示，这里的 article_id用以区分不同的article。接着在后台定义一个get_article(article_id)的函数，用来获取article相应的数据，此外还需要建立URL和函数之间的一一对应关系。这就是Web开发中所谓的<strong>路由分发</strong>，如下图所示：<br><img src="http://7xolkd.com1.z0.glb.clouddn.com/2016112203.jpg" alt="路由分发"></article_id></p>
+<p>在Flask中，使用werkzeug来做路由分发，werkzeug是Flask使用的底层WSGI库（WSGI，全称 Web Server Gateway Interface，或者 Python Web Server Gateway Interface，是为 Python 语言定义的Web服务器和Web应用程序之间的一种简单而通用的接口）。</p>
+<p>WSGI将Web服务分成两个部分：服务器和应用程序。WGSI服务器只负责与网络相关的两件事：接收浏览器的HTTP请求、向浏览器发送HTTP应答；而对HTTP请求的具体处理逻辑，则通过调用WSGI应用程序进行。<strong>WSGI</strong>工作流程如下图所示：<br><img src="http://7xolkd.com1.z0.glb.clouddn.com/2016112204.jpg" alt="WSGI"></p>
+<p>在Flask中，路由分发的代码写起来十分简单，如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@app.route('/articles/&lt;int:article_id&gt;/') </span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_article</span><span class="params">(article_id)</span>:</span></div><div class="line">    <span class="keyword">return</span> .... <span class="comment">#Get the data we need.</span></div></pre></td></tr></table></figure></p>
+<p>通过业务逻辑函数获得我们所需的数据后，服务器将会根据这些数据来生成HTTP响应（对于Web应用来说，一般就是一个HTML文件，这个是可以直接被我们的客户端，即浏览器直接读取并解释的）。在Web开发中，常规的做法是将获取的数据传入Web应用提供的一个HTML模板文件中，经过模板系统的渲染后最终得到我们所需要的HTML响应文件。</p>
+<p>一般情况下，<strong>虽然请求不同，但是响应中的数据的展示方式是相同的</strong>，通俗点说就是除了我们请求获得的数据不一样外，其他都是一样的，那么我们就可以设计一个模板（除了数据内容可以改动，其他都是固定的HTML文件）。我们仍然以博客站点为例，对不同article而言，其具体article content虽然不同，但页面展示的内容除了请求的数据外都是一样的，都有标题拦，内容栏等。也就是说，对于article来说，我们只需提供一个HTML模板，然后传入不同article数据，即可得到不同的HTTP响应。这就是所谓的<strong>模板渲染</strong>，如下图所示：<br><img src="http://7xolkd.com1.z0.glb.clouddn.com/2016112205jpg" alt="模板渲染"></p>
+<p>在Flask中使用Jinja2模板渲染引擎来做模板渲染（Jinja2是基于python的模板引擎，功能比较类似于于PHP的smarty，J2ee的Freemarker和velocity。它能完全支持unicode，并具有集成的沙箱执行环境，应用广泛。jinja2使用BSD授权）。Jinja2的工作流程如下图所示：<br><img src="http://7xolkd.com1.z0.glb.clouddn.com/2016112206.jpg" alt="Jinja"></p>
+<p>在Flask中，模板渲染的代码写起来也是十分的便捷，代码如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@app.route('/articles/&lt;int:article_id&gt;/') </span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_article</span><span class="params">(article_id)</span>:</span></div><div class="line">    <span class="keyword">return</span> render_template(<span class="string">'path/to/template.html'</span>, data_needed)</div></pre></td></tr></table></figure></p>
+<p>综上所述（哈哈，想起了高中的数学验证），在Flask中，我们处理一个请求的流程就是，首先根据 用户提交的URL来决定由哪个业务逻辑函数来处理，然后在函数中进行操作，取得所需的数据。再将取得的数据传给相应的模板文件中，由Jinja2负责渲染得到HTTP响应内容，即HTTP响应的HTML文件，然后由Flask返回响应内容。</p>
+<h1 id="简单的Flask示例程序"><a href="#简单的Flask示例程序" class="headerlink" title="简单的Flask示例程序"></a>简单的Flask示例程序</h1><p>Flask很简单，同时他也很难，简单在他能十行启动一个Web网页；难在他十分灵活，用得好能撑起百万用户的大型Web网站。让我想到这和狄更斯所说的“这是最好的时代，这是最坏的时代，这是智慧的时代，这是愚蠢的时代；这是信仰的时期，这是怀疑的时期；这是光明的季节，这是黑暗的季节；这是希望之春，这是失望之冬；人们面前有着各样事物，人们面前一无所有；人们正在直登天堂；人们正在直下地狱。”有那么一点异曲同工的意味呢，哈哈~</p>
+<p>以下是最最纯净，最最简单的Flask程序：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</div><div class="line">app = Flask(__name__)</div><div class="line"> </div><div class="line"><span class="meta">@app.route("/")</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">return</span> <span class="string">"Hello World!"</span></div><div class="line"> </div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">    app.run()</div></pre></td></tr></table></figure></p>
+<p>文章出自：<a href="http://www.krzer.com" target="_blank" rel="external">Krzer</a> <a href="http://www.krzer.com" target="_blank" rel="external">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;自从选修了Python程序设计之后，对Python的喜爱就一天天的狂热起来了。刚开始对他有好感仅仅是因为他是一种解释型的语言，心里觉得：“哎呦，这家伙真TM酷，可以像和我们对话一样运行我们的代码！”当时对于老师所说的“胶水语言”，根本就不理解是个啥，后来慢慢接触得多了，才知道Python拥有众多的包和库文件，能够轻松地将C、C++和JAVA等程序语言写的模块用起来。也就是从这个时候起就慢慢被Python深深地吸引了，折服于这个神奇的语言。
+    
+    </summary>
+    
+      <category term="代码之路" scheme="http://krzer.com/categories/%E4%BB%A3%E7%A0%81%E4%B9%8B%E8%B7%AF/"/>
+    
+    
+      <category term="python" scheme="http://krzer.com/tags/python/"/>
+    
+      <category term="flask" scheme="http://krzer.com/tags/flask/"/>
+    
+      <category term="web" scheme="http://krzer.com/tags/web/"/>
+    
+  </entry>
   
   <entry>
     <title>关于CNAME和MX冲突的一些事</title>

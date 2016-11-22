@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://krzer.com/2016/11/22/flask-introduction/</loc>
+    
+    <lastmod>2016-11-22T17:20:49.142Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://krzer.com/about/index.html</loc>
     
     <lastmod>2016-11-21T14:54:40.787Z</lastmod>
