@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://krzer.com/"/>
-  <updated>2016-11-22T17:23:02.266Z</updated>
+  <updated>2016-11-22T17:25:06.369Z</updated>
   <id>http://krzer.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://krzer.com/2016/11/22/flask-introduction/"/>
     <id>http://krzer.com/2016/11/22/flask-introduction/</id>
     <published>2016-11-22T13:17:18.000Z</published>
-    <updated>2016-11-22T17:23:02.266Z</updated>
+    <updated>2016-11-22T17:25:06.369Z</updated>
     
     <content type="html"><![CDATA[<p>自从选修了Python程序设计之后，对Python的喜爱就一天天的狂热起来了。刚开始对他有好感仅仅是因为他是一种解释型的语言，心里觉得：“哎呦，这家伙真TM酷，可以像和我们对话一样运行我们的代码！”当时对于老师所说的“胶水语言”，根本就不理解是个啥，后来慢慢接触得多了，才知道Python拥有众多的包和库文件，能够轻松地将C、C++和JAVA等程序语言写的模块用起来。也就是从这个时候起就慢慢被Python深深地吸引了，折服于这个神奇的语言。<a id="more"></a></p>
 <p>Python是个强大的语言，我们通常将其用于大数据计算，数据统计和Web爬虫，但是殊不知Python在web方面也是挺有作为的，其中我们熟知的豆瓣、Reddit、Quora和Dropbox等网站都是用Python来进行开发的，还有不少的网站都会在网站上用Python来作为扩展脚本语言进行开发，比如Facebook和Youtube。</p>
