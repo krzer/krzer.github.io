@@ -96,48 +96,12 @@
 </header>
     <div class="article-content">
         
-        <p>这一段时间在学习Flask，真的是越学越觉得什么都不会。以前学习一些基础知识的时候一直觉得没什么用，结果现在才发现在开发的过程中，很多概念性的问题还是很重要的，比如HTTP协议、TCP/IP协议之类的知识，如果没有比较了解的话，开发起来其实很多时候尽管做得出来，也都是不明就里的，一旦遇到什么问题，很难知道应该从哪一个点入手。真的很难让我们不感叹道，经过短短几十年的发展，互联网或是计算机技术发展真的是太迅速了，没有哪一个学科在短短的时间内发展成为这么一个参天大树，每个树节点还在源源不断的为本体添枝加叶。</p>
-<p>好了，老毛病又犯了，一吹起牛来根本停不下来~我们来谈谈在Flask开发中的一些好用的轮子吧，也就是Flask最最出名的插件，这一点它可是完美的继承了Python的衣钵，很容易就可以扩展出其他的功能。前提是只要你知道这个插件，知道怎么用就行了，举一反三，大多数的插件其实用法都有异曲同工之处。在开发网站的过程中，必不可少的就是Web表单,它主要在我们的网页中扮演着数据采集的功能。刚开始的时候我都是自己踩坑，手写表单，直到有一天我写累了，去逛了一下flask的网站，发现有个<strong>extensions</strong>，点进去看了一下，顺便看看了一些插件，突然之间了我看到了<strong>Flask——WTF</strong>，What’s the hell？<strong>(Flask-WTF offers simple integration with WTForms. This integration includes optional CSRF handling for greater security.)</strong>一个Web表单的插件，我当时的心情真的是Flask，what the fuck……</p>
-<p>Ok，言归正传，我们今天就谈谈Flask-WTF这个插件。正如他自己介绍的那样，Flask—WTF提供了简单的WTForms集成，包括跨站请求伪造（CSRF），文件上传和验证码。具体功能如下：</p>
-<ul>
-<li>功能</li>
-<li>集成 wtforms。</li>
-<li>带有 csrf 令牌的安全表单。</li>
-<li>全局的 csrf 保护。</li>
-<li>支持验证码（Recaptcha）。</li>
-<li>与 Flask-Uploads一起支持文件上传。</li>
-<li>国际化集成。</li>
-</ul>
-<h1 id="Flask-WTF的安装"><a href="#Flask-WTF的安装" class="headerlink" title="Flask-WTF的安装"></a>Flask-WTF的安装</h1><p>Flask的插件安装很简单，和Python安装插件一样，都可以通过pip和easy_install进行安装。</p>
-<p>用pip安装Flask-WTF：<br><code>pip install Flask-WTF</code></p>
-<p>用easy_install安装Flask-WTF：<br><code>easy_install Flask-WTF</code></p>
-<p>但是，对Flask-WTF来说，我们有更好的选择，因为Flask-WTF是托管在在Github上的，并且在Github上面十分的活跃，我们可以直接clone他的代码库，获取最新的代码。</p>
-<p>clone公共仓库：<br><code>git clone git://github.com/lepture/flask-wtf.git</code></p>
-<p>下载 tarball:<br><code>$ curl -OL https://github.com/lepture/flask-wtf/tarball/master</code></p>
-<p>下载 zipball:<br><code>$ curl -OL https://github.com/lepture/flask-wtf/zipball/master</code></p>
-<p>当我们下载了Flask-WTF的代码之后，我们就可以执行以下代码，将其安装到我们Python的<strong>site-packages</strong>了：<br><code>python setup.py install</code></p>
-<h1 id="利用Flask-WTF创建表单"><a href="#利用Flask-WTF创建表单" class="headerlink" title="利用Flask-WTF创建表单"></a>利用Flask-WTF创建表单</h1><p>实际上，Flask-WTF的功能十分强大，单单是他下面整合的WTForms单元就已经能够基本满足一些小型网站的建设使用，比如我们的个人博客之类的小网站。</p>
-<p>Flask-WTF提供了对WTForms的集成，创建示例代码如下：</p>
-<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="title">from</span> flask_wtf <span class="keyword">import</span> Form</div><div class="line"><span class="title">from</span> wtforms <span class="keyword">import</span> StringField</div><div class="line"><span class="title">from</span> wtforms.validators <span class="keyword">import</span> DataRequired</div><div class="line"><span class="class"></span></div><div class="line"><span class="keyword">class</span> <span class="type">MyForm</span>(<span class="type">Form</span>):</div><div class="line">    name = <span class="type">StringField</span>('<span class="title">name'</span>, <span class="title">validators</span>=[<span class="type">DataRequired</span>()])</div></pre></td></tr></table></figure>
-<p>与此同时，隐藏的CSRF（Cross-site request forgery跨站请求伪造，也被称为“One Click Attack”或者Session Riding，通常缩写为CSRF或者XSRF，是一种对网站的恶意利用。)令牌会被自动地创建，我们可以在模板中对它进行渲染，示例代码如下：</p>
-<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&lt;form method=<span class="string">"<span class="keyword">POST</span>"</span> action=<span class="string">"/"</span>&gt;</div><div class="line">    &#123;&#123; form.csrf_token &#125;&#125;</div><div class="line">    &lt;p&gt;</div><div class="line">        Please enter your name:&lt;br&gt;</div><div class="line">        &#123;&#123; form.name(size=<span class="number">20</span>) &#125;&#125;&lt;br&gt;</div><div class="line">    &lt;/p&gt; </div><div class="line">    &lt;input type=<span class="string">"submit"</span> value=<span class="string">"Go"</span>&gt;</div><div class="line">&lt;/form&gt;</div></pre></td></tr></table></figure>
-<p>尽管如此，为了创建有效的<strong>XHTML/HTML</strong>，Form 类还会有一个<strong>hidden_tag</strong>方法， 它在一个隐藏的 DIV 标签中渲染任何隐藏的字段，包括 CSRF 字段:</p>
-<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&lt;form method=<span class="string">"<span class="keyword">POST</span>"</span> action=<span class="string">"/"</span>&gt;</div><div class="line">    &#123;&#123; form.hidden_tag() &#125;&#125;</div><div class="line">    &lt;p&gt;</div><div class="line">        Please enter your name:&lt;br&gt;</div><div class="line">        &#123;&#123; form.name(size=<span class="number">20</span>) &#125;&#125;&lt;br&gt;</div><div class="line">    &lt;/p&gt; </div><div class="line">    &lt;input type=<span class="string">"submit"</span> value=<span class="string">"Go"</span>&gt;</div><div class="line">&lt;/form&gt;</div></pre></td></tr></table></figure>
-<p>这里说明一下，在我们的模板和常规的HTML表单之间存在着一些非常有意思的不同之处。模板想让我们在前面创建的表单类实例化成一个具体的表单对象，并把它存储成一个模板参数，成为form。这样在我们编写这个模板的视图函数的时候，我们就只要将具体的模板参数传递到这个模板上来就可以了。在上面代码中的<strong>form.hidden_tag()</strong> 模板参数将被替换为一个隐藏字段，用来是实现在配置中激活的<strong>CSRF</strong>保护。如果你已经激活了 <strong>CSRF</strong>，那么这个字段需要出现在你所有的表单中。</p>
-<h1 id="Flask-WTF验证表单"><a href="#Flask-WTF验证表单" class="headerlink" title="Flask-WTF验证表单"></a>Flask-WTF验证表单</h1><p>在我们的视图处理程序中通过视图函数来验证请求:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@app.route('/submit', methods=('GET', 'POST'))</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">submit</span><span class="params">()</span>:</span></div><div class="line">    form = MyForm()</div><div class="line">    <span class="keyword">if</span> form.validate_on_submit():</div><div class="line">        <span class="keyword">return</span> redirect(<span class="string">'/success'</span>)</div><div class="line">    <span class="keyword">return</span> render_template(<span class="string">'submit.html'</span>, form=form)</div></pre></td></tr></table></figure>
-<p>这里我们不需要把<strong>request.form</strong>传给<strong>Flask-WTF</strong>；<strong>Flask-WTF</strong>会自动进行加载。而且<strong>validate_on_submit</strong>函数将会检查是否这是一个<strong>POST请求</strong>，并且验证请求是否有效。</p>
-<h1 id="Flask-WTF的简单示例"><a href="#Flask-WTF的简单示例" class="headerlink" title="Flask-WTF的简单示例"></a>Flask-WTF的简单示例</h1><p>登陆视图函数（login（））：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@app.route('/login', methods = ['GET', 'POST'])</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">login</span><span class="params">()</span>:</span></div><div class="line">    form = LoginForm()</div><div class="line">    <span class="keyword">if</span> form.validate_on_submit():</div><div class="line">        flash(<span class="string">'Login requested for Name="'</span> + form.name.data + <span class="string">'",Login requested for PassWord="'</span> + form.password.data + <span class="string">'", remember_me='</span> + str(form.remember_me.data))</div><div class="line">        <span class="keyword">return</span> redirect(<span class="string">'/index'</span>)</div><div class="line">    <span class="keyword">return</span> render_template(<span class="string">'login.html'</span>,</div><div class="line">        title = <span class="string">'Sign In'</span>,</div><div class="line">        form = form</div><div class="line">        )</div></pre></td></tr></table></figure>
-<p>登陆模板（login.html）：</p>
-<figure class="highlight django"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="xml"><span class="comment">&lt;!-- extend base layout --&gt;</span></span></div><div class="line"><span class="template-tag">&#123;% <span class="name"><span class="name">extends</span></span> "base.html" %&#125;</span><span class="xml"></span></div><div class="line"></div><div class="line"><span class="template-tag">&#123;% <span class="name"><span class="name">block</span></span> content %&#125;</span><span class="xml"></span></div><div class="line">  <span class="tag">&lt;<span class="name">h1</span>&gt;</span>Sign In<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">""</span> <span class="attr">method</span>=<span class="string">"post"</span> <span class="attr">name</span>=<span class="string">"login"</span>&gt;</span></div><div class="line">      <span class="template-variable">&#123;&#123; form.hidden_tag() &#125;&#125;</span><span class="xml"></span></div><div class="line">      <span class="tag">&lt;<span class="name">p</span>&gt;</span></div><div class="line">          Please enter your name:<span class="tag">&lt;<span class="name">br</span>&gt;</span></div><div class="line">          <span class="template-variable">&#123;&#123; form.name(size=20) &#125;&#125;</span><span class="xml"><span class="tag">&lt;<span class="name">br</span>&gt;</span></span></div><div class="line">          <span class="template-tag">&#123;% <span class="name"><span class="name">for</span></span> error <span class="keyword">in</span> form.name.errors %&#125;</span><span class="xml"></span></div><div class="line">            <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">"color: red;"</span>&gt;</span>[<span class="template-variable">&#123;&#123; error &#125;&#125;</span><span class="xml">]<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span></div><div class="line">          <span class="template-tag">&#123;% <span class="name"><span class="name">endfor</span></span> %&#125;</span><span class="xml"><span class="tag">&lt;<span class="name">br</span>&gt;</span></span></div><div class="line">      <span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">p</span>&gt;</span></div><div class="line">          Please enter your password:<span class="tag">&lt;<span class="name">br</span>&gt;</span></div><div class="line">          <span class="template-variable">&#123;&#123; form.password(size=20) &#125;&#125;</span><span class="xml"><span class="tag">&lt;<span class="name">br</span>&gt;</span></span></div><div class="line">          <span class="template-tag">&#123;% <span class="name"><span class="name">for</span></span> error <span class="keyword">in</span> form.password.errors %&#125;</span><span class="xml"></span></div><div class="line">            <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">"color: red;"</span>&gt;</span>[<span class="template-variable">&#123;&#123; error &#125;&#125;</span><span class="xml">]<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span></div><div class="line">          <span class="template-tag">&#123;% <span class="name"><span class="name">endfor</span></span> %&#125;</span><span class="xml"><span class="tag">&lt;<span class="name">br</span>&gt;</span></span></div><div class="line">      <span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">p</span>&gt;</span><span class="template-variable">&#123;&#123; form.remember_me &#125;&#125;</span><span class="xml"> Remember Me<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></div><div class="line">      <span class="tag">&lt;<span class="name">p</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"submit"</span> <span class="attr">value</span>=<span class="string">"Sign In"</span>&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">form</span>&gt;</span></div><div class="line"><span class="template-tag">&#123;% <span class="name"><span class="name">endblock</span></span> %&#125;</span><span class="xml"></span></div></pre></td></tr></table></figure>
-<p>这里我们加入了字段验证，通常情况下，任何需要验证的字段都会把错误信息放入<strong>form.field_name.errors</strong>下。</p>
-<p>Flask-WTF涉及的功能太多了，我们这里不能细细展开讲解，智能先讲一些比较基础的操作，还有一些比如CSRF保护、验证码、文件上传功能，下面有时间我会再单独拿出来细细的总结一下，毕竟我也是刚刚入门，感悟什么的还不够透彻，也不敢妄自评论，写出来和自己吹吹牛可大不一样哦，哈哈~写出来就应该比较严谨一点，不能太随便，哈哈，<strong><em>我不是为了输赢，我就是认真</em></strong>。顺便说一句，这几天好冷，码字手指都伸张不开了……</p>
-<p>文章出自：<a href="http://www.krzer.com" target="_blank" rel="external">Krzer</a> <a href="http://www.krzer.com" target="_blank" rel="external">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
-
+        <p>这一段时间在学习Flask，真的是越学越觉得什么都不会。以前学习一些基础知识的时候一直觉得没什么用，结果现在才发现在开发的过程中，很多概念性的问题还是很重要的，比如HTTP协议、TCP/IP协议之类的知识，如果没有比较了解的话，开发起来其实很多时候尽管做得出来，也都是不明就里的，一旦遇到什么问题，很难知道应该从哪一个点入手。真的很难让我们不感叹道，经过短短几十年的发展，互联网或是计算机技术发展真的是太迅速了，没有哪一个学科在短短的时间内发展成为这么一个参天大树，每个树节点还在源源不断的为本体添枝加叶。
         
         
         <p class="article-more-link">
+          
+            <a href="/2016/11/27/flask-wtf-introduction/#more">Read More</a>
           
        </p>
     </div>
@@ -821,7 +785,7 @@
 			
 		
 			
-				<li><a href="/tags/观点/" title="观点">观点<sup>1</sup></a></li>
+				<li><a href="/tags/系统/" title="系统">系统<sup>1</sup></a></li>
 			
 		
 			
@@ -837,11 +801,15 @@
 			
 		
 			
-				<li><a href="/tags/系统/" title="系统">系统<sup>1</sup></a></li>
+				<li><a href="/tags/感想/" title="感想">感想<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/感想/" title="感想">感想<sup>1</sup></a></li>
+				<li><a href="/tags/观点/" title="观点">观点<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>1</sup></a></li>
 			
 		
 			
@@ -850,10 +818,6 @@
 		
 			
 				<li><a href="/tags/windows/" title="windows">windows<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/正则表达式/" title="正则表达式">正则表达式<sup>1</sup></a></li>
 			
 		
 		</ul>
