@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>Krzer&#39;s Blog</title>
+    <title>简谈Flask插件之Flask-WTF | Krzer&#39;s Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="krzer">
@@ -14,15 +14,16 @@
     
     
     
-    <meta name="description" content="Krzer&apos;s Personal Blog">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Krzer's Blog">
-<meta property="og:url" content="http://krzer.com/index.html">
+    <meta name="description" content="这一段时间在学习Flask，真的是越学越觉得什么都不会。以前学习一些基础知识的时候一直觉得没什么用，结果现在才发现在开发的过程中，很多概念性的问题还是很重要的，比如HTTP协议、TCP/IP协议之类的知识，如果没有比较了解的话，开发起来其实很多时候尽管做得出来，也都是不明就里的，一旦遇到什么问题，很难知道应该从哪一个点入手。真的很难让我们不感叹道，经过短短几十年的发展，互联网或是计算机技术发展真的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="简谈Flask插件之Flask-WTF">
+<meta property="og:url" content="http://krzer.com/2016/11/27/flask-wtf-introduction/index.html">
 <meta property="og:site_name" content="Krzer's Blog">
-<meta property="og:description" content="Krzer&apos;s Personal Blog">
+<meta property="og:description" content="这一段时间在学习Flask，真的是越学越觉得什么都不会。以前学习一些基础知识的时候一直觉得没什么用，结果现在才发现在开发的过程中，很多概念性的问题还是很重要的，比如HTTP协议、TCP/IP协议之类的知识，如果没有比较了解的话，开发起来其实很多时候尽管做得出来，也都是不明就里的，一旦遇到什么问题，很难知道应该从哪一个点入手。真的很难让我们不感叹道，经过短短几十年的发展，互联网或是计算机技术发展真的">
+<meta property="og:updated_time" content="2016-11-27T10:17:56.623Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Krzer's Blog">
-<meta name="twitter:description" content="Krzer&apos;s Personal Blog">
+<meta name="twitter:title" content="简谈Flask插件之Flask-WTF">
+<meta name="twitter:description" content="这一段时间在学习Flask，真的是越学越觉得什么都不会。以前学习一些基础知识的时候一直觉得没什么用，结果现在才发现在开发的过程中，很多概念性的问题还是很重要的，比如HTTP协议、TCP/IP协议之类的知识，如果没有比较了解的话，开发起来其实很多时候尽管做得出来，也都是不明就里的，一旦遇到什么问题，很难知道应该从哪一个点入手。真的很难让我们不感叹道，经过短短几十年的发展，互联网或是计算机技术发展真的">
 
     
     <link rel="alternative" href="/atom.xml" title="Krzer&#39;s Blog" type="application/atom+xml">
@@ -75,12 +76,10 @@
 </div>
     </header>
     <div id="container">
-      <div id="main">
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
   <h1 itemprop="name">
     
       <a href="/2016/11/27/flask-wtf-introduction/" title="简谈Flask插件之Flask-WTF" itemprop="url">简谈Flask插件之Flask-WTF</a>
@@ -94,9 +93,16 @@
     
   </p>
 </header>
-    <div class="article-content">
-        
-        <p>这一段时间在学习Flask，真的是越学越觉得什么都不会。以前学习一些基础知识的时候一直觉得没什么用，结果现在才发现在开发的过程中，很多概念性的问题还是很重要的，比如HTTP协议、TCP/IP协议之类的知识，如果没有比较了解的话，开发起来其实很多时候尽管做得出来，也都是不明就里的，一旦遇到什么问题，很难知道应该从哪一个点入手。真的很难让我们不感叹道，经过短短几十年的发展，互联网或是计算机技术发展真的是太迅速了，没有哪一个学科在短短的时间内发展成为这么一个参天大树，每个树节点还在源源不断的为本体添枝加叶。</p>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Flask-WTF的安装"><span class="toc-number">1.</span> <span class="toc-text">Flask-WTF的安装</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用Flask-WTF创建表单"><span class="toc-number">2.</span> <span class="toc-text">利用Flask-WTF创建表单</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Flask-WTF验证表单"><span class="toc-number">3.</span> <span class="toc-text">Flask-WTF验证表单</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Flask-WTF的简单示例"><span class="toc-number">4.</span> <span class="toc-text">Flask-WTF的简单示例</span></a></li></ol>
+		
+		</div>
+		
+		<p>这一段时间在学习Flask，真的是越学越觉得什么都不会。以前学习一些基础知识的时候一直觉得没什么用，结果现在才发现在开发的过程中，很多概念性的问题还是很重要的，比如HTTP协议、TCP/IP协议之类的知识，如果没有比较了解的话，开发起来其实很多时候尽管做得出来，也都是不明就里的，一旦遇到什么问题，很难知道应该从哪一个点入手。真的很难让我们不感叹道，经过短短几十年的发展，互联网或是计算机技术发展真的是太迅速了，没有哪一个学科在短短的时间内发展成为这么一个参天大树，每个树节点还在源源不断的为本体添枝加叶。</p>
 <p>好了，老毛病又犯了，一吹起牛来根本停不下来~我们来谈谈在Flask开发中的一些好用的轮子吧，也就是Flask最最出名的插件，这一点它可是完美的继承了Python的衣钵，很容易就可以扩展出其他的功能。前提是只要你知道这个插件，知道怎么用就行了，举一反三，大多数的插件其实用法都有异曲同工之处。在开发网站的过程中，必不可少的就是Web表单,它主要在我们的网页中扮演着数据采集的功能。刚开始的时候我都是自己踩坑，手写表单，直到有一天我写累了，去逛了一下flask的网站，发现有个<strong>extensions</strong>，点进去看了一下，顺便看看了一些插件，突然之间了我看到了<strong>Flask——WTF</strong>，What’s the hell？<strong>(Flask-WTF offers simple integration with WTForms. This integration includes optional CSRF handling for greater security.)</strong>一个Web表单的插件，我当时的心情真的是Flask，what the fuck……</p>
 <p>Ok，言归正传，我们今天就谈谈Flask-WTF这个插件。正如他自己介绍的那样，Flask—WTF提供了简单的WTForms集成，包括跨站请求伪造（CSRF），文件上传和验证码。具体功能如下：</p>
 <ul>
@@ -134,14 +140,9 @@
 <p>这里我们加入了字段验证，通常情况下，任何需要验证的字段都会把错误信息放入<strong>form.field_name.errors</strong>下。</p>
 <p>Flask-WTF涉及的功能太多了，我们这里不能细细展开讲解，智能先讲一些比较基础的操作，还有一些比如CSRF保护、验证码、文件上传功能，下面有时间我会再单独拿出来细细的总结一下，毕竟我也是刚刚入门，感悟什么的还不够透彻，也不敢妄自评论，写出来和自己吹吹牛可大不一样哦，哈哈~写出来就应该比较严谨一点，不能太随便，哈哈，<strong><em>我不是为了输赢，我就是认真</em></strong>。顺便说一句，这几天好冷，码字手指都伸张不开了……</p>
 <p>文章出自：<a href="http://www.krzer.com" target="_blank" rel="external">Krzer</a> <a href="http://www.krzer.com" target="_blank" rel="external">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
+  
+	</div>
+		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
 <div class="article-categories">
@@ -159,608 +160,47 @@
 
 
 
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://krzer.com/2016/11/27/flask-wtf-introduction/" data-title="简谈Flask插件之Flask-WTF | Krzer&#39;s Blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
 
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2016/11/27/flask-wtf-introduction/#comments" class="ds-thread-count comments-count-link" data-thread-key="2016/11/27/flask-wtf-introduction/" data-count-type="comments">&nbsp;</a>
-	
-</div>
 
 </footer>
 
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2016/11/22/flask-introduction/" title="简谈Flask及实现原理" itemprop="url">简谈Flask及实现原理</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="krzer" target="_blank" itemprop="author">krzer</a>
-		
-  <p class="article-time">
-    <time datetime="2016-11-22T13:17:18.000Z" itemprop="datePublished"> 发表于 2016-11-22</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>自从选修了Python程序设计之后，对Python的喜爱就一天天的狂热起来了。刚开始对他有好感仅仅是因为他是一种解释型的语言，心里觉得：“哎呦，这家伙真TM酷，可以像和我们对话一样运行我们的代码！”当时对于老师所说的“胶水语言”，根本就不理解是个啥，后来慢慢接触得多了，才知道Python拥有众多的包和库文件，能够轻松地将C、C++和JAVA等程序语言写的模块用起来。也就是从这个时候起就慢慢被Python深深地吸引了，折服于这个神奇的语言。
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2016/11/22/flask-introduction/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/代码之路/">代码之路</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/python/">python</a><a href="/tags/flask/">flask</a><a href="/tags/web/">web</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
+   	       
+	</article>
 	
-	  	<span></span>
-		<a href="/2016/11/22/flask-introduction/#comments" class="ds-thread-count comments-count-link" data-thread-key="2016/11/22/flask-introduction/" data-count-type="comments">&nbsp;</a>
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2016/11/22/flask-introduction/"  title="简谈Flask及实现原理">
+ <strong>下一篇：</strong><br/> 
+ <span>简谈Flask及实现原理
+</span>
+</a>
+</div>
+
+</nav>
+
 	
-</div>
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2016/11/27/flask-wtf-introduction/" data-title="简谈Flask插件之Flask-WTF" data-url="http://krzer.com/2016/11/27/flask-wtf-introduction/"></div>
+</section>
 
-</footer>
 
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2016/11/21/Something-about-cname-and-mx-conflicts/" title="关于CNAME和MX冲突的一些事" itemprop="url">关于CNAME和MX冲突的一些事</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="krzer" target="_blank" itemprop="author">krzer</a>
-		
-  <p class="article-time">
-    <time datetime="2016-11-20T19:13:47.000Z" itemprop="datePublished"> 发表于 2016-11-21</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>前不久为了提升自己的逼格，设置了一个域名邮箱，之前用着还蛮好的，收件发件速度都不错，也没有出现丢件的情况。不过，最近查看我的域名邮箱时，发现最近一段时间内一封邮件也没有收到，真是奇怪呢，即使没什么订阅服务，起码也有广告吧，我不敢相信腾讯能把邮箱过滤系统做得如此好。
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2016/11/21/Something-about-cname-and-mx-conflicts/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/互联网协议/">互联网协议</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/CNAME/">CNAME</a><a href="/tags/MX/">MX</a><a href="/tags/DNS/">DNS</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2016/11/21/Something-about-cname-and-mx-conflicts/#comments" class="ds-thread-count comments-count-link" data-thread-key="2016/11/21/Something-about-cname-and-mx-conflicts/" data-count-type="comments">&nbsp;</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2016/11/11/Follow-the-interest/" title="追随兴趣" itemprop="url">追随兴趣</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="krzer" target="_blank" itemprop="author">krzer</a>
-		
-  <p class="article-time">
-    <time datetime="2016-11-11T06:26:37.000Z" itemprop="datePublished"> 发表于 2016-11-11</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>今天是双十一，我失眠了，不是因为守着某猫某东急着剁手，在这点上我还是比较理智的，而是因为在思考着人生（真的是思考人生@_@~~），思考着未来的道路究竟该往哪里走？算起来，跟着老师做项目也已经有大半年了，这期间不能说有多大的作为，但是帮助还是有的，也学习了挺多在平时根本学不到的东西。
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2016/11/11/Follow-the-interest/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/生活随笔/">生活随笔</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/感想/">感想</a><a href="/tags/观点/">观点</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2016/11/11/Follow-the-interest/#comments" class="ds-thread-count comments-count-link" data-thread-key="2016/11/11/Follow-the-interest/" data-count-type="comments">&nbsp;</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2016/10/27/Computer-Startup-Analysis/" title="计算机启动分析" itemprop="url">计算机启动分析</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="krzer" target="_blank" itemprop="author">krzer</a>
-		
-  <p class="article-time">
-    <time datetime="2016-10-27T05:57:04.000Z" itemprop="datePublished"> 发表于 2016-10-27</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>我小的时候一直有个疑问，电脑是怎么启动的，当我们按下电源键的时候，电脑内部是怎么运行的，总不能是电源键和操作系统捆绑在一起，形成一个事件吧@_@。这个问题一直在困扰着我，我一直都不知道这其中到底是怎么一回事，这几天碰巧看到一些关于MBR（即主引导记录）的文章，脑袋里大概有了那么点概念了，想想好像是那么一回事。这几天，经过查阅相关资料，在这里整理一下我梳理的笔记。<br>
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2016/10/27/Computer-Startup-Analysis/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/理解计算机/">理解计算机</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/系统/">系统</a><a href="/tags/计算机/">计算机</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2016/10/27/Computer-Startup-Analysis/#comments" class="ds-thread-count comments-count-link" data-thread-key="2016/10/27/Computer-Startup-Analysis/" data-count-type="comments">&nbsp;</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2016/10/18/windows-python-opencv/" title="Python环境下OpenCV的安装" itemprop="url">Python环境下OpenCV的安装</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="krzer" target="_blank" itemprop="author">krzer</a>
-		
-  <p class="article-time">
-    <time datetime="2016-10-18T09:16:12.000Z" itemprop="datePublished"> 发表于 2016-10-18</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>前不久发现域名块到期又得续费了，才惊醒我的博客竟然荒废了将近一年了，故前去续费并打算重启博客，记录一下最近的学习和进展。因为要在寝室和实验室两头跑，一些在配置上遇到的问题没有记录的话，重复查找解决就要耗费我大量的时间，确实划不来，还不如写写博客记录一下，方便自己也方便大家，这就是所说的前人种树后人乘凉吧。博客存在的意义不也是不让自己在同一个问题上犯两次问题么？
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2016/10/18/windows-python-opencv/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/代码之路/">代码之路</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/python/">python</a><a href="/tags/opencv/">opencv</a><a href="/tags/windows/">windows</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2016/10/18/windows-python-opencv/#comments" class="ds-thread-count comments-count-link" data-thread-key="2016/10/18/windows-python-opencv/" data-count-type="comments">&nbsp;</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2015/12/17/regular-expression-example/" title="正则表达式实例大全" itemprop="url">正则表达式实例大全</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="krzer" target="_blank" itemprop="author">krzer</a>
-		
-  <p class="article-time">
-    <time datetime="2015-12-17T12:21:00.000Z" itemprop="datePublished"> 发表于 2015-12-17</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>上次在<a href="http://krzer.com/2015/11/29/Python3-spider-start/">Python爬虫入门</a>里提起过正则表达式，但是由于篇幅有限，并没有很详尽地介绍正则表达式更多的用法。我们知道正则表达式的用途极为广泛，可以在爬虫里的匹配字符，在遇到需要校验数据时，也可以使用我们的正则表达式来帮我们完成任务。但是我们在用的时候往往是在网上找他的用法，费时又费力，结果找来的还是不很符合要求。所以我最近把我们日常开发中常用的一些正则表达式整理总结了一下，包括校验数字、字符、一些特殊的需求等等。一来给自己留个底，二来方便大家需要的时候查阅，毕竟我们写博客的目的就是避免重复造轮子嘛。</p>
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2015/12/17/regular-expression-example/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/代码之路/">代码之路</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/数据结构/">数据结构</a><a href="/tags/正则表达式/">正则表达式</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2015/12/17/regular-expression-example/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/12/17/regular-expression-example/" data-count-type="comments">&nbsp;</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2015/12/10/Python-_data-structure(2)/" title="Python数据结构（二）" itemprop="url">Python数据结构（二）</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="krzer" target="_blank" itemprop="author">krzer</a>
-		
-  <p class="article-time">
-    <time datetime="2015-12-10T14:25:00.000Z" itemprop="datePublished"> 发表于 2015-12-10</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>今天我们就接下来介绍一下剩下的一点常用的Python数据结构。今天介绍的有Sets（集合）和Dictionaries（字典），这两种数据结构虽然用的相对较少，但是在我们学习和使用Python的过程中也是发挥着极大的作用的。长话短说，我们来看看这两种数据结构吧。<br>
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2015/12/10/Python-_data-structure(2)/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/代码之路/">代码之路</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/python/">python</a><a href="/tags/数据结构/">数据结构</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2015/12/10/Python-_data-structure(2)/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/12/10/Python-_data-structure(2)/" data-count-type="comments">&nbsp;</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2015/12/08/Python-_data-structure(1)/" title="Python数据结构（一）" itemprop="url">Python数据结构（一）</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="krzer" target="_blank" itemprop="author">krzer</a>
-		
-  <p class="article-time">
-    <time datetime="2015-12-08T12:10:33.000Z" itemprop="datePublished"> 发表于 2015-12-08</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>这几天闲着无事，准备着手总结一些Python常用的数据结构，我们知道，一个程序里面必然会有数据的存在，同样的一个或几个数据要组织起来，可以有不同的组织方式，也就是不同的存储方式。不同的组织方式就是不同的结构，我们把这些数据组织在一起的结构称之为数据的结构，也叫做数据结构。Python中数据的组织方式叫做Python的数据结构。<br>
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2015/12/08/Python-_data-structure(1)/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/代码之路/">代码之路</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/python/">python</a><a href="/tags/数据结构/">数据结构</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2015/12/08/Python-_data-structure(1)/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/12/08/Python-_data-structure(1)/" data-count-type="comments">&nbsp;</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2015/12/03/Python3-spider-_practice/" title="Python3爬虫实战" itemprop="url">Python3爬虫实战</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="krzer" target="_blank" itemprop="author">krzer</a>
-		
-  <p class="article-time">
-    <time datetime="2015-12-03T14:25:00.000Z" itemprop="datePublished"> 发表于 2015-12-03</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <p>昨天讲了爬虫入门的基础知识已经基本够用了，今天我们来写一个小爬虫实战一下，练练手。在这里说一下，访问的网站如果禁止爬虫抓取的话，那么我们就要加上头文件，来模拟浏览器抓取网页信息，但是有的网站并不禁止爬虫抓取，那么我们便可加可不加，加的话势必会影响爬虫抓取的速度，这里大家可以自由选择啦。</p>
-<p>我初步的设想是抓抓学校老师们的靓照，给大家欣赏一下（奸笑），首先我们必须先访问一下学校的网站，看看教师简介在哪里，偷偷地复制一下网址，再看看源码，便可以着手写爬虫了，此处省取若干字……大家自行脑补，我还是直接上代码吧，Talk Is Cheap, Show Me The Code!<br>
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2015/12/03/Python3-spider-_practice/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/代码之路/">代码之路</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/python/">python</a><a href="/tags/爬虫/">爬虫</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-	  	<span></span>
-		<a href="/2015/12/03/Python3-spider-_practice/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/12/03/Python3-spider-_practice/" data-count-type="comments">&nbsp;</a>
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-
-  <nav id="page-nav" class="clearfix">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next<span></span></a>
-  </nav>
-
-</div>
+</div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Flask-WTF的安装"><span class="toc-number">1.</span> <span class="toc-text">Flask-WTF的安装</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#利用Flask-WTF创建表单"><span class="toc-number">2.</span> <span class="toc-text">利用Flask-WTF创建表单</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Flask-WTF验证表单"><span class="toc-number">3.</span> <span class="toc-text">Flask-WTF验证表单</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Flask-WTF的简单示例"><span class="toc-number">4.</span> <span class="toc-text">Flask-WTF的简单示例</span></a></li></ol>
+ 
+  </div>
 
 <div id="asidepart">
 <div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
@@ -974,12 +414,89 @@ $(document).ready(function(){
       m.removeClass('moveMain');
       a.css('display', 'block').removeClass('fadeOut');
       o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
         
     }
   });
 });
 </script>
 
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
 
 
 
@@ -1062,4 +579,4 @@ var _hmt = _hmt || [];
 <!-- Tiny_search End -->
 
   </body>
- </html>
+</html>
