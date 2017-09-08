@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>Python环境下OpenCV的安装 | Krzer&#39;s Blog</title>
+    <title>在Gentoo环境下手动安装Kubernetes以及问题分析 | Krzer&#39;s Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="krzer">
@@ -14,18 +14,18 @@
     
     
     
-    <meta name="description" content="前不久发现域名块到期又得续费了，才惊醒我的博客竟然荒废了将近一年了，故前去续费并打算重启博客，记录一下最近的学习和进展。因为要在寝室和实验室两头跑，一些在配置上遇到的问题没有记录的话，重复查找解决就要耗费我大量的时间，确实划不来，还不如写写博客记录一下，方便自己也方便大家，这就是所说的前人种树后人乘凉吧。博客存在的意义不也是不让自己在同一个问题上犯两次问题么？">
+    <meta name="description" content="名字起得有点长，这是本文的一大槽点，我也很无奈啊，想要短小精悍的体现出文章重点，又想让人一看“哎哟不得了，感觉好厉害的样子”，也只能取这么个名字了……好了说重点，什么是Kubernetes?Kubernetes是Google开源的容器集群管理系统，其提供应用部署、维护、扩展机制等功能，利用Kubernetes能方便地管理跨机器运行容器化的应用。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Python环境下OpenCV的安装">
-<meta property="og:url" content="http://krzer.com/2016/10/18/windows-python-opencv/index.html">
+<meta property="og:title" content="在Gentoo环境下手动安装Kubernetes以及问题分析">
+<meta property="og:url" content="http://krzer.com/2017/09/08/Kubernetes-installation/index.html">
 <meta property="og:site_name" content="Krzer's Blog">
-<meta property="og:description" content="前不久发现域名块到期又得续费了，才惊醒我的博客竟然荒废了将近一年了，故前去续费并打算重启博客，记录一下最近的学习和进展。因为要在寝室和实验室两头跑，一些在配置上遇到的问题没有记录的话，重复查找解决就要耗费我大量的时间，确实划不来，还不如写写博客记录一下，方便自己也方便大家，这就是所说的前人种树后人乘凉吧。博客存在的意义不也是不让自己在同一个问题上犯两次问题么？">
-<meta property="og:image" content="http://7xolkd.com1.z0.glb.clouddn.com/161018.jpg">
-<meta property="og:updated_time" content="2016-10-18T10:23:19.947Z">
+<meta property="og:description" content="名字起得有点长，这是本文的一大槽点，我也很无奈啊，想要短小精悍的体现出文章重点，又想让人一看“哎哟不得了，感觉好厉害的样子”，也只能取这么个名字了……好了说重点，什么是Kubernetes?Kubernetes是Google开源的容器集群管理系统，其提供应用部署、维护、扩展机制等功能，利用Kubernetes能方便地管理跨机器运行容器化的应用。">
+<meta property="og:image" content="http://7xolkd.com1.z0.glb.clouddn.com/2017090801.jpg">
+<meta property="og:updated_time" content="2017-09-08T08:28:54.654Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Python环境下OpenCV的安装">
-<meta name="twitter:description" content="前不久发现域名块到期又得续费了，才惊醒我的博客竟然荒废了将近一年了，故前去续费并打算重启博客，记录一下最近的学习和进展。因为要在寝室和实验室两头跑，一些在配置上遇到的问题没有记录的话，重复查找解决就要耗费我大量的时间，确实划不来，还不如写写博客记录一下，方便自己也方便大家，这就是所说的前人种树后人乘凉吧。博客存在的意义不也是不让自己在同一个问题上犯两次问题么？">
-<meta name="twitter:image" content="http://7xolkd.com1.z0.glb.clouddn.com/161018.jpg">
+<meta name="twitter:title" content="在Gentoo环境下手动安装Kubernetes以及问题分析">
+<meta name="twitter:description" content="名字起得有点长，这是本文的一大槽点，我也很无奈啊，想要短小精悍的体现出文章重点，又想让人一看“哎哟不得了，感觉好厉害的样子”，也只能取这么个名字了……好了说重点，什么是Kubernetes?Kubernetes是Google开源的容器集群管理系统，其提供应用部署、维护、扩展机制等功能，利用Kubernetes能方便地管理跨机器运行容器化的应用。">
+<meta name="twitter:image" content="http://7xolkd.com1.z0.glb.clouddn.com/2017090801.jpg">
 
     
     <link rel="alternative" href="/atom.xml" title="Krzer&#39;s Blog" type="application/atom+xml">
@@ -84,14 +84,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2016/10/18/windows-python-opencv/" title="Python环境下OpenCV的安装" itemprop="url">Python环境下OpenCV的安装</a>
+      <a href="/2017/09/08/Kubernetes-installation/" title="在Gentoo环境下手动安装Kubernetes以及问题分析" itemprop="url">在Gentoo环境下手动安装Kubernetes以及问题分析</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="krzer" target="_blank" itemprop="author">krzer</a>
 		
   <p class="article-time">
-    <time datetime="2016-10-18T09:16:12.000Z" itemprop="datePublished"> 发表于 2016-10-18</time>
+    <time datetime="2017-09-08T08:34:12.000Z" itemprop="datePublished"> 发表于 2017-09-08</time>
     
   </p>
 </header>
@@ -100,37 +100,118 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#系统与软件环境"><span class="toc-number">1.</span> <span class="toc-text">系统与软件环境</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#环境搭建"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Python环境搭建"><span class="toc-number">2.1.</span> <span class="toc-text">Python环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OpenCV环境搭建"><span class="toc-number">2.2.</span> <span class="toc-text">OpenCV环境搭建</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#测试"><span class="toc-number">3.</span> <span class="toc-text">测试</span></a></li></ol>
+			
 		
 		</div>
 		
-		<p>前不久发现域名块到期又得续费了，才惊醒我的博客竟然荒废了将近一年了，故前去续费并打算重启博客，记录一下最近的学习和进展。因为要在寝室和实验室两头跑，一些在配置上遇到的问题没有记录的话，重复查找解决就要耗费我大量的时间，确实划不来，还不如写写博客记录一下，方便自己也方便大家，这就是所说的前人种树后人乘凉吧。博客存在的意义不也是不让自己在同一个问题上犯两次问题么？<a id="more"></a></p>
-<p>最近在学习图像识别的相关知识，说到图像识别就必须提到OpenCV这个开源的计算机视觉库了。OpenCV于1999年由Intel建立，如今由Willow Garage提供支持。OpenCV是一个基于BSD许可（开源）发行的跨平台计算机视觉库，可以运行在Linux、Windows和Mac OS操作系统上。它轻量级而且高效——由一系列 C 函数和少量 C++ 类构成，同时提供了Python、Ruby、MATLAB等语言的接口，实现了图像处理和计算机视觉方面的很多通用算法。</p>
-<p>前面也说了OpenCV支持多种语言接口，要说最合适的当选C++不让，但是偏偏我选的是Python，为什么呢？考虑到<strong>OpenCV+C++</strong>中C++我比较不擅长用，而且C++开发的进度要慢些（起码代码量也多点嘛==），而<strong>OpenCV+Python</strong>中Python接口虽然不如C++齐全和强大，但它则是我比较喜欢而且擅长的，相对于前者开发也快点， 两害相权取其轻，我选择后者。</p>
-<h1 id="系统与软件环境"><a href="#系统与软件环境" class="headerlink" title="系统与软件环境"></a>系统与软件环境</h1><ul>
-<li>Microsoft Windows8.1 专业版 6.3.9600</li>
-<li>Python 2.7.11</li>
-<li>OpenCV 2.4.13</li>
-<li>NumPy 1.11.2</li>
-<li>Matplotlib 1.5.3</li>
+		<p>名字起得有点长，这是本文的一大槽点，我也很无奈啊，想要短小精悍的体现出文章重点，又想让人一看“哎哟不得了，感觉好厉害的样子”，也只能取这么个名字了……好了说重点，什么是Kubernetes?Kubernetes是Google开源的容器集群管理系统，其提供应用部署、维护、扩展机制等功能，利用Kubernetes能方便地管理跨机器运行容器化的应用。<a id="more"></a>说白了，Kubernetes的目标是让你可以像管理牲畜一样管理你的服务，而不是像宠物一样，同时提高资源的利用率，让码农关注在应用开发本身，高可用的事情就交给Kubernetes吧。<br><img src="http://7xolkd.com1.z0.glb.clouddn.com/2017090801.jpg" alt="Kubernetes"></p>
+<p>#硬件环境</p>
+<p>准备三台主机作为我们安装Kubernetes的硬件环境。<br>以下分别是每台主机的IP地址信息、功能以及所要安装的组件。</p>
+<p>其中第一台主机即作为Master也作为Node。</p>
+<blockquote>
+<p>10.2.0.143 master/node kube-apiserver kube-controller-manager kube-scheduler kubelet kube-proxy etcd flannel<br>10.2.0.142 node kubectl kube-proxy flannel<br>10.2.0.144 node kubectl kube-proxy flannel</p>
+</blockquote>
+<p>#系统环境</p>
+<ul>
+<li>Gentoo</li>
+<li>Docker 1.12.1</li>
+<li>Etcd 3.1.5</li>
+<li>Kubernetes 1.6.7</li>
+<li>Flannel v0.8.0</li>
 </ul>
-<hr>
-<p>Python这里选用的是2.7版本，虽然OpenCV3.0版本里支持了Python3接口，但是由于是入门还是选择稳定版本的OpenCV2，所以理所当然选择Python2。</p>
-<p>相对于C++是可以直接调用OpenCV的，Python在使用的时候必须配合NumPy一起使用，这是由于在使用中最大值投影涉及到了对单个像素点的操作，因此必须使用到Python中常用的矩阵处理工具包，也就是NumPy。</p>
-<p>在这里我还使用了Matplotlib，Matplotlib是python的一个绘图库，里头有各种各样的绘图方法。</p>
-<h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><h2 id="Python环境搭建"><a href="#Python环境搭建" class="headerlink" title="Python环境搭建"></a>Python环境搭建</h2><p>1.前往<a href="https://www.python.org/" target="_blank" rel="external">Python官网</a>下载Python2.7，安装就没什么可说的，一路<strong>next</strong>就行了。安装时选择加入环境变量。</p>
-<p>2.为了方便Python安装资源包，我们需要安装<strong>easy_install</strong>和<strong>pip</strong>，<strong>easy_install</strong>和<strong>pip</strong>都是用来下载安装Python一个公共资源库<strong>PyPI</strong>的相关资源包的。</p>
-<figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">首先安装easy_install</div><div class="line"></div><div class="line">下载地址<span class="symbol">:https</span><span class="symbol">://pypi</span>.python.org/pypi/ez_setup</div><div class="line"></div><div class="line">解压,安装.</div><div class="line"></div><div class="line">python ez_setup.py</div><div class="line"></div><div class="line">安装好easy_install 之后 再安装pip</div><div class="line"></div><div class="line">下载地址<span class="symbol">:https</span><span class="symbol">://pypi</span>.python.org/pypi/pip</div><div class="line"></div><div class="line">解压,安装.</div><div class="line"></div><div class="line">python setup.py install</div></pre></td></tr></table></figure>
-<p><strong>这里注意一下，要把<em>C:\Python27\Scripts;</em>加入环境变量中，防止后面用不了pip。</strong></p>
-<p>3.NumPy的安装我们就可以使用<strong>pip</strong>进项安装了，由于资源在国外，下载起来很慢并且导致失败，我们这里需要换源，这里强烈推荐清华大学的<a href="https://mirrors.tuna.tsinghua.edu.cn/" target="_blank" rel="external">tuna开源镜像站</a>。</p>
-<p>在命令行里输入：<br><code>pip install numpy -i https://pypi.tuna.tsinghua.edu.cn/simple</code></p>
-<p>分分钟装完。</p>
-<p>4.Matplotlib的安装同上</p>
-<p>在命令行里输入：<br><code>pip install matplotlib -i https://pypi.tuna.tsinghua.edu.cn/simple</code></p>
-<h2 id="OpenCV环境搭建"><a href="#OpenCV环境搭建" class="headerlink" title="OpenCV环境搭建"></a>OpenCV环境搭建</h2><p>1.前往<a href="http://opencv.org/" target="_blank" rel="external">OpenCV官网</a>下载OpenCV2.4.13，下载慢的自行科学上网。下载完毕打开文件，其实就是将文件解压出来。</p>
-<p>2前往<strong>opencv\opencv\build\python\2.7</strong>找到<strong>x64</strong>和<strong>x86</strong>文件夹，由于我的电脑是64位的，在这里选择x64文件夹，将<strong>cv2.pyd</strong>文件复制到Python2.7安装目录下的<strong>Python27\Lib\site-packages</strong>中。</p>
-<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line"><span class="keyword">import</span> cv2</div><div class="line"></div><div class="line">img = cv2.imread(<span class="string">'img.jpg'</span>,<span class="number">0</span>)</div><div class="line">cv2.imshow(<span class="string">'image'</span>,img)</div><div class="line">cv2.waitKey(<span class="number">0</span>)</div><div class="line">cv2.destroyAllWindows()</div></pre></td></tr></table></figure>
-<p><img src="http://7xolkd.com1.z0.glb.clouddn.com/161018.jpg" alt="image"></p>
+<p>#安装</p>
+<p>在这里我使用的是最原始的安装方式，使用二进制文件安装，好处是可以安装任意版本的Kubernetes和其他组件，坏处是每个组件都需要一个个安装，然后一个个进行配置，而且配置比较复杂（好吧，我承认是因为用的Gentoo系统没法一步到位，不过这样有个好处就是对每个组件的了解会更加深入，更能锻炼人，在不断的错误中慢慢学习~）</p>
+<p><strong>三台主机均要安装Etcd和Flannel，因为现在是简单配置，配置如下就可以。</strong></p>
+<p>##安装docker</p>
+<p>鉴于主机上本来就有Docker，且Docker安装配置较为简单明了，在此就不再废话，下次再另外写一篇有关Docker的~</p>
+<p>##安装Etcd</p>
+<p>etcd是一个高可用的键值存储系统，主要用于共享配置和服务发现。</p>
+<p>###下载二进制文件</p>
+<p><code>DOWNLOAD_URL=https://storage.googleapis.com/etcd  #etcd存储地址
+ETCD_VER=v3.1.5  #设置etcd版本号
+wget ${DOWNLOAD_URL}/${ETCD_VER}/etcd-${ETCD_VER}-linux-amd64.tar.gz
+tar xvf etcd-${ETCD_VER}-linux-amd64.tar.gz</code></p>
+<p>###部署文件并启动Etcd</p>
+<p>将解压出来的etcd, etcdctl放入 /usr/bin/下。</p>
+<p>由于是在Gentoo系统下进行安装，所以我们在这里不用systemd启动，而是用手动启动，输入以下命令在后台挂起运行。<br><strong>启动Etcd</strong></p>
+<p><code>nohup etcd --initial-cluster &#39;default=http://localhost:2380&#39; --initial-cluster-state &#39;new&#39; --advertise-client-urls &#39;http://localhost:2379&#39; --listen-peer-urls &#39;http://localhost:2380&#39; --listen-client-urls &#39;http://localhost:2379&#39; &gt; /var/log/etcd.log 2&gt;&amp;1 &amp;</code></p>
+<p>##安装Flannel</p>
+<p>Flannel是CoreOS团队针对Kubernetes设计的一个网络规划服务，简单来说，它的功能是让集群中的不同节点主机创建的Docker容器都具有全集群唯一的虚拟IP地址。<br>Flannel的设计目的就是为集群中的所有节点重新规划IP地址的使用规则，从而使得不同节点上的容器能够获得“同属一个内网”且”不重复的”IP地址，并让属于不同节点上的容器能够直接通过内网IP通信。</p>
+<p>###下载二进制文件</p>
+<p><code>wget https://github.com/coreos/flannel/releases/download/v0.8.0/flannel-v0.8.0-linux-amd64.tar.gz &amp;&amp; chmod +x flannel-v0.8.0-linux-amd64.tar.gz
+tar xvf flannel-v0.8.0-linux-amd64.tar.gz</code></p>
+<p>###部署文件并启动Flannel</p>
+<p>解压后主要有flanneld、mk-docker-opts.sh这两个文件，其中flanneld为主要的执行文件，sh脚本用于生成Docker启动参数。将二进制文件flanneld和脚本文件mk-docker-opts.sh放入/usr/bin/下。</p>
+<p>由于flannel需要依赖etcd来保证集群IP分配不冲突的问题，所以首先要在etcd中设置 flannel节点所使用的IP段。所以我们首先要用etcdctl写入配置。</p>
+<p><strong>etcdctl写入配置</strong><br><code>etcdctl set /ksptest/network/config &#39;{&quot;Network&quot;: &quot;11.0.0.0/8&quot;}&#39;</code></p>
+<p><strong>启动flanneld</strong><br>`nohup flanneld –etcd-endpoints=<a href="http://localhost:2379" target="_blank" rel="external">http://localhost:2379</a> –etcd-prefix=/ksptest/network –iface=eth0 &gt; /var/log/flannel.log 2&gt;&amp;1 &amp;</p>
+<p><strong>修改docker启动选项，使之从flannel的overlay网络中分配ip地址：
+</strong><br><code>source /run/flannel/subnet.env
+DOCKER_OPTS=&quot;$DOCKER_OPTS --bip=$FLANNEL_SUBNET --mtu=$FLANNEL_MTU&quot;</code></p>
+<p>##安装Kubernetes</p>
+<p>直接使用GitHub上的release里的二进制文件安装。在这里安装的是v.1.6.7，具体需要安装什么版本可以自行更改。以下配置均为在Master主机（10.2.0.143）配置的，Node主机配置的IP地址稍有不同，需要注意。执行以下命令进行安装。<br><code>wget https://github.com/kubernetes/kubernetes/releases/download/v1.6.0/kubernetes.tar.gz
+tar xvf kubernetes.tar.gz
+cd kubernetes
+./cluster/get-kube-binaries.sh
+cd server
+tar xvf kubernetes-server-linux-amd64.tar.gz
+rm -f *_tag *.tar
+chmod 755 *
+mv * /usr/bin</code></p>
+<p>###配置并启动kube-apiserver</p>
+<p><code>nohup kube-apiserver --etcd-servers=http://localhost:2379 --service-cluster-ip-range=11.0.0.0/16 --anonymous-auth=false &gt; /var/log/apiserver.log 2&gt;&amp;1 &amp;</code></p>
+<p>###配置并启动kube-controller-manager</p>
+<p><code>nohup kube-controller-manager --logtostderr=true --v=0 --master=http://localhost:8080 &gt; /var/log/controller-manager.log 2&gt;&amp;1 &amp;</code></p>
+<p>###配置并启动kube-scheduler</p>
+<p><code>nohup kube-scheduler --logtostderr=true --v=0 --master=http://localhost:8080 &gt; /var/log/scheduler.log 2&gt;&amp;1 &amp;</code></p>
+<p>###配置并启动kubectl</p>
+<p>这里说明一下，最好先启动kubectl，否则后面kube-proxy会报错。</p>
+<p><code>nohup kubelet --address=0.0.0.0 --port=10250 --api-servers=http://localhost:8080  --cgroups-per-qos=false --enforce-node-allocatable=&quot;&quot; &gt; /var/log/kubelet.log 2&gt;&amp;1 &amp;</code></p>
+<p>###配置并启动kube-proxy</p>
+<p><code>nohup kube-proxy --logtostderr=true --v=0 --master=http://localhost:8080 &gt; /var/log/proxy.log 2&gt;&amp;1 &amp;</code></p>
+<p>###Node节点配置<br>在Node节点上只需要配置：</p>
+<ul>
+<li>kubelet</li>
+<li>kube-proxy</li>
+</ul>
+<p>这里要注意的就是kubelet和kube-proxy中的api-servers和master中的IP地址要改为master主机的IP地址10.2.0.143。具体如下：</p>
+<p><strong>配置并启动kubectl</strong></p>
+<p><code>nohup kubelet --address=0.0.0.0 --port=10250 --api-servers=http://10.2.0.143:8080  --cgroups-per-qos=false --enforce-node-allocatable=&quot;&quot; &gt; /var/log/kubelet.log 2&gt;&amp;1 &amp;</code></p>
+<p><strong>配置并启动kube-proxy</strong></p>
+<p><code>nohup kubelet --address=0.0.0.0 --port=10250 --api-servers=http://localhost:8080  --cgroups-per-qos=false --enforce-node-allocatable=&quot;&quot; &gt; /var/log/kubelet.log 2&gt;&amp;1 &amp;</code></p>
+<p>##验证启动</p>
+<p>在Master节点运行以下命令：</p>
+<blockquote>
+<p>kubectl get all<br>NAME                         CLUSTER-IP    EXTERNAL-IP   PORT(S)          AGE<br>svc/kubernetes               11.0.0.1      <none>        443/TCP          19h</none></p>
+<p>kubectl get nodes<br>NAME            STATUS    AGE         VERSION<br>ksp-lab         Ready     17h         v1.6.7<br>ksp-platform    Ready     17h         v1.6.7<br>ptc-dashboard   Ready     17h         v1.6.7</p>
+</blockquote>
+<p>出现如上的情况，就说明Kubernetes可以正常工作了。</p>
+<p>##一些问题总结</p>
+<ol>
+<li>安装完成后，发现master的8080端口只能通过127.0.0.1或localhost访问，通过节点IP是无法访问的，从而造成如下问题：</li>
+</ol>
+<p><code>ksp-platform ~ # kubectl -s http://10.2.0.143:8080 get node  
+The connection to the server 10.2.0.143:8080 was refused - did you specify the right host or port?</code><br><strong>原因分析</strong>：/etc/kubernetes/manifests/kube-apiserver.json 文件中的-insecure-bind-address参数默认为127.0.0.1，即API-server绑定的安全IP只有127.0.0.1，相当于一个白名单，修改成0.0.0.0后，表示运行所有节点进行访问。</p>
+<p>在启动kube-apiserver的时候加上参数 –insecure-bind-address=0.0.0.0”  这样运行所有节点都可以进行访问。</p>
+<ol>
+<li>安装完成后，master和一台node主机可以get到all、nodes和pod、service等资源，而另一台node只能get到all和nodes，get不到pod等其他资源，问题如下：</li>
+</ol>
+<p><code>ksp-lab ~ # kubectl get pod
+No resources found.</code><br><strong>原因分析</strong>：~.kube/config中的cluster设置有误，可能是之前装过Kubernetes的原因，配置文件残留带来的影响。</p>
+<p>重新配置config文件，将cluster设置为当前的cluster。</p>
+<ol>
+<li>Kubernetes无法删除pod实例，在执行了delete之后，显示删除成功，但实际上还是可以get到相关的pod资源，具体问题如下：</li>
+</ol>
+<p><code>ptc-dashboard ~ # kubectl delete pods --all 
+pod &quot;nginx-controller-tkl5l&quot; deleted 
+pod &quot;nginx-controller-st3ax&quot; deleted 
+pod &quot;nginx-controller-qbnz7&quot; deleted 
+ptc-dashboard ~ # kubectl get pods
+NAME                     READY     STATUS    RESTARTS   AGE
+nginx-controller-tkl5l   1/1       Unknown   0          4h
+nginx-controller-st3ax   1/1       Unknown   0          4h
+nginx-controller-qbnz7   1/1       Unknown   0          4h</code><br><strong>原因分析</strong>：因为这三个容器的rc，services都已经删除了，但是还保持了这个Unknown状态是由于目标主机无法响应并返回信息导致的，所以我们判断是这三个容器所在的目标主机宕机所导致的无法删除。</p>
+<p>删除对应的Node节点，再在对应的Node节点上重新启动kubelet，节点一上线会自动加入我们当前的集群中来。</p>
 <p>文章出自：<a href="http://www.krzer.com" target="_blank" rel="external">Krzer</a> <a href="http://www.krzer.com" target="_blank" rel="external">http://www.krzer.com/</a>版权所有。本站文章除注明出处外，皆为作者原创文章，可自由引用，但请注明来源。</p>
   
 	</div>
@@ -145,7 +226,7 @@
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/python/">python</a><a href="/tags/opencv/">opencv</a><a href="/tags/windows/">windows</a>
+  <span></span> <a href="/tags/kubernetes/">kubernetes</a><a href="/tags/docker/">docker</a><a href="/tags/linux/">linux</a>
   </div>
 
 </div>
@@ -154,7 +235,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://krzer.com/2016/10/18/windows-python-opencv/" data-title="Python环境下OpenCV的安装 | Krzer&#39;s Blog" data-tsina="null" class="share clearfix">
+	  <div data-url="http://krzer.com/2017/09/08/Kubernetes-installation/" data-title="在Gentoo环境下手动安装Kubernetes以及问题分析 | Krzer&#39;s Blog" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -167,19 +248,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2016/10/27/Computer-Startup-Analysis/" title="计算机启动分析">
-  <strong>上一篇：</strong><br/>
-  <span>
-  计算机启动分析</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/12/17/regular-expression-example/"  title="正则表达式实例大全">
+<a href="/2016/11/27/flask-wtf-introduction/"  title="简谈Flask插件之Flask-WTF">
  <strong>下一篇：</strong><br/> 
- <span>正则表达式实例大全
+ <span>简谈Flask插件之Flask-WTF
 </span>
 </a>
 </div>
@@ -188,7 +261,7 @@
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2016/10/18/windows-python-opencv/" data-title="Python环境下OpenCV的安装" data-url="http://krzer.com/2016/10/18/windows-python-opencv/"></div>
+	<div class="ds-thread" data-thread-key="2017/09/08/Kubernetes-installation/" data-title="在Gentoo环境下手动安装Kubernetes以及问题分析" data-url="http://krzer.com/2017/09/08/Kubernetes-installation/"></div>
 </section>
 
 
@@ -198,7 +271,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#系统与软件环境"><span class="toc-number">1.</span> <span class="toc-text">系统与软件环境</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#环境搭建"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Python环境搭建"><span class="toc-number">2.1.</span> <span class="toc-text">Python环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OpenCV环境搭建"><span class="toc-number">2.2.</span> <span class="toc-text">OpenCV环境搭建</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#测试"><span class="toc-number">3.</span> <span class="toc-text">测试</span></a></li></ol>
+ 
  
   </div>
 
