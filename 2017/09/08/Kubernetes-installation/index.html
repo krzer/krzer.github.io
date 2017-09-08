@@ -21,7 +21,7 @@
 <meta property="og:site_name" content="Krzer's Blog">
 <meta property="og:description" content="名字起得有点长，这是本文的一大槽点，我也很无奈啊，想要短小精悍的体现出文章重点，又想让人一看“哎哟不得了，感觉好厉害的样子”，也只能取这么个名字了……好了说重点，什么是Kubernetes?Kubernetes是Google开源的容器集群管理系统，其提供应用部署、维护、扩展机制等功能，利用Kubernetes能方便地管理跨机器运行容器化的应用。">
 <meta property="og:image" content="http://7xolkd.com1.z0.glb.clouddn.com/2017090801.jpg">
-<meta property="og:updated_time" content="2017-09-08T08:47:22.426Z">
+<meta property="og:updated_time" content="2017-09-08T08:49:50.123Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="在Gentoo环境下手动安装Kubernetes以及问题分析">
 <meta name="twitter:description" content="名字起得有点长，这是本文的一大槽点，我也很无奈啊，想要短小精悍的体现出文章重点，又想让人一看“哎哟不得了，感觉好厉害的样子”，也只能取这么个名字了……好了说重点，什么是Kubernetes?Kubernetes是Google开源的容器集群管理系统，其提供应用部署、维护、扩展机制等功能，利用Kubernetes能方便地管理跨机器运行容器化的应用。">
@@ -151,10 +151,7 @@
 <p><strong>配置并启动kube-proxy</strong></p>
 <figure class="highlight fortran"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nohup kubelet --address=<span class="number">0.0.</span><span class="number">0.0</span> --port=<span class="number">10250</span> --api-servers=http://localhost:<span class="number">8080</span>  --cgroups-per-qos=false --enforce-node-<span class="keyword">allocatable</span>=<span class="string">""</span> &gt; /var/<span class="built_in">log</span>/kubelet.<span class="built_in">log</span> <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</div></pre></td></tr></table></figure>
 <h2 id="验证启动"><a href="#验证启动" class="headerlink" title="验证启动"></a>验证启动</h2><p>在Master节点运行以下命令：</p>
-<blockquote>
-<p>kubectl get all<br>NAME                         CLUSTER-IP    EXTERNAL-IP   PORT(S)          AGE<br>svc/kubernetes               11.0.0.1      <none>        443/TCP          19h</none></p>
-<p>kubectl get nodes<br>NAME            STATUS    AGE         VERSION<br>ksp-lab         Ready     17h         v1.6.7<br>ksp-platform    Ready     17h         v1.6.7<br>ptc-dashboard   Ready     17h         v1.6.7</p>
-</blockquote>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">kubectl get all</div><div class="line">NAME                         CLUSTER-IP    EXTERNAL-IP   PORT(S)          AGE</div><div class="line">svc/kubernetes               <span class="number">11.0</span><span class="number">.0</span><span class="number">.1</span>      &lt;none&gt;        <span class="number">443</span>/TCP          <span class="number">19</span>h</div><div class="line"></div><div class="line">kubectl get nodes</div><div class="line">NAME            STATUS    AGE         VERSION</div><div class="line">ksp-lab         Ready     <span class="number">17</span>h         v1<span class="number">.6</span><span class="number">.7</span></div><div class="line">ksp-platform    Ready     <span class="number">17</span>h         v1<span class="number">.6</span><span class="number">.7</span></div><div class="line">ptc-dashboard   Ready     <span class="number">17</span>h         v1<span class="number">.6</span><span class="number">.7</span></div></pre></td></tr></table></figure>
 <p>出现如上的情况，就说明Kubernetes可以正常工作了。</p>
 <h1 id="一些问题总结"><a href="#一些问题总结" class="headerlink" title="一些问题总结"></a>一些问题总结</h1><ol>
 <li>安装完成后，发现master的8080端口只能通过127.0.0.1或localhost访问，通过节点IP是无法访问的，从而造成如下问题：</li>
@@ -292,6 +289,14 @@
 			
 		
 			
+				<li><a href="/tags/系统/" title="系统">系统<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/kubernetes/" title="kubernetes">kubernetes<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/docker/" title="docker">docker<sup>1</sup></a></li>
 			
 		
@@ -300,15 +305,7 @@
 			
 		
 			
-				<li><a href="/tags/系统/" title="系统">系统<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/感想/" title="感想">感想<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/计算机/" title="计算机">计算机<sup>1</sup></a></li>
+				<li><a href="/tags/观点/" title="观点">观点<sup>1</sup></a></li>
 			
 		
 			
@@ -324,11 +321,11 @@
 			
 		
 			
-				<li><a href="/tags/观点/" title="观点">观点<sup>1</sup></a></li>
+				<li><a href="/tags/计算机/" title="计算机">计算机<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/kubernetes/" title="kubernetes">kubernetes<sup>1</sup></a></li>
+				<li><a href="/tags/感想/" title="感想">感想<sup>1</sup></a></li>
 			
 		
 			

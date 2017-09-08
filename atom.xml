@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://krzer.com/"/>
-  <updated>2017-09-08T08:47:22.426Z</updated>
+  <updated>2017-09-08T08:49:50.123Z</updated>
   <id>http://krzer.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://krzer.com/2017/09/08/Kubernetes-installation/"/>
     <id>http://krzer.com/2017/09/08/Kubernetes-installation/</id>
     <published>2017-09-08T08:34:12.000Z</published>
-    <updated>2017-09-08T08:47:22.426Z</updated>
+    <updated>2017-09-08T08:49:50.123Z</updated>
     
     <content type="html"><![CDATA[<p>名字起得有点长，这是本文的一大槽点，我也很无奈啊，想要短小精悍的体现出文章重点，又想让人一看“哎哟不得了，感觉好厉害的样子”，也只能取这么个名字了……好了说重点，什么是Kubernetes?Kubernetes是Google开源的容器集群管理系统，其提供应用部署、维护、扩展机制等功能，利用Kubernetes能方便地管理跨机器运行容器化的应用。<a id="more"></a>说白了，Kubernetes的目标是让你可以像管理牲畜一样管理你的服务，而不是像宠物一样，同时提高资源的利用率，让码农关注在应用开发本身，高可用的事情就交给Kubernetes吧。<br><img src="http://7xolkd.com1.z0.glb.clouddn.com/2017090801.jpg" alt="Kubernetes"></p>
 <h1 id="硬件环境"><a href="#硬件环境" class="headerlink" title="硬件环境"></a>硬件环境</h1><p>准备三台主机作为我们安装Kubernetes的硬件环境。<br>以下分别是每台主机的IP地址信息、功能以及所要安装的组件。</p>
@@ -69,10 +69,7 @@
 <p><strong>配置并启动kube-proxy</strong></p>
 <figure class="highlight fortran"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nohup kubelet --address=<span class="number">0.0.</span><span class="number">0.0</span> --port=<span class="number">10250</span> --api-servers=http://localhost:<span class="number">8080</span>  --cgroups-per-qos=false --enforce-node-<span class="keyword">allocatable</span>=<span class="string">""</span> &gt; /var/<span class="built_in">log</span>/kubelet.<span class="built_in">log</span> <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</div></pre></td></tr></table></figure>
 <h2 id="验证启动"><a href="#验证启动" class="headerlink" title="验证启动"></a>验证启动</h2><p>在Master节点运行以下命令：</p>
-<blockquote>
-<p>kubectl get all<br>NAME                         CLUSTER-IP    EXTERNAL-IP   PORT(S)          AGE<br>svc/kubernetes               11.0.0.1      <none>        443/TCP          19h</none></p>
-<p>kubectl get nodes<br>NAME            STATUS    AGE         VERSION<br>ksp-lab         Ready     17h         v1.6.7<br>ksp-platform    Ready     17h         v1.6.7<br>ptc-dashboard   Ready     17h         v1.6.7</p>
-</blockquote>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">kubectl get all</div><div class="line">NAME                         CLUSTER-IP    EXTERNAL-IP   PORT(S)          AGE</div><div class="line">svc/kubernetes               <span class="number">11.0</span><span class="number">.0</span><span class="number">.1</span>      &lt;none&gt;        <span class="number">443</span>/TCP          <span class="number">19</span>h</div><div class="line"></div><div class="line">kubectl get nodes</div><div class="line">NAME            STATUS    AGE         VERSION</div><div class="line">ksp-lab         Ready     <span class="number">17</span>h         v1<span class="number">.6</span><span class="number">.7</span></div><div class="line">ksp-platform    Ready     <span class="number">17</span>h         v1<span class="number">.6</span><span class="number">.7</span></div><div class="line">ptc-dashboard   Ready     <span class="number">17</span>h         v1<span class="number">.6</span><span class="number">.7</span></div></pre></td></tr></table></figure>
 <p>出现如上的情况，就说明Kubernetes可以正常工作了。</p>
 <h1 id="一些问题总结"><a href="#一些问题总结" class="headerlink" title="一些问题总结"></a>一些问题总结</h1><ol>
 <li>安装完成后，发现master的8080端口只能通过127.0.0.1或localhost访问，通过节点IP是无法访问的，从而造成如下问题：</li>
